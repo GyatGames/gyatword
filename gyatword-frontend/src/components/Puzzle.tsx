@@ -445,7 +445,7 @@ function Puzzle() {
 
     return (
         <Page>
-            <img src="../public/logo4.png" alt="logo" width="150" height="150" />
+            <img src="/logo4.png" alt="logo" width="150" height="150" />
             <Header>Crossword, but brainrot</Header>
             <p>
                 Puzzle refreshes daily
