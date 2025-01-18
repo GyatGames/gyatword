@@ -1,6 +1,6 @@
 # Gyatword
 
-**Gyatword** is an engaging crossword puzzle game that challenges your knowledge of brainrot vocabulary. Developed collaboratively by a team of four passionate developers in a short span of 24 hours [NUS Hacknroll](https://hacknroll.nushackers.org), Gyatword aims to provide users with an exciting and challenging word game experience.
+**Gyatword** is an engaging crossword puzzle game that challenges your knowledge of brainrot vocabulary. Developed collaboratively by a team of four passionate developers in a short span of 24 hours ([NUS Hacknroll](https://hacknroll.nushackers.org)), Gyatword aims to provide users with an exciting and challenging word game experience.
 
 ---
 ## Original Repositories
