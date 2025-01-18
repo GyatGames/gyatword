@@ -21,7 +21,9 @@ This project was initially split into two repositories before being merged into 
 ---
 
 ## Try it out
+
 Visit the website at [www.gyatword.com](https://www.gyatword.com)
+
 ---
 
 ## Meet the Team
