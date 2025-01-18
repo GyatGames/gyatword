@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    // CrosswordImperative,
     CrosswordGrid,
-    // CrosswordProps,
     CrosswordProvider,
     CrosswordProviderImperative,
     CrosswordProviderProps,
@@ -31,15 +29,13 @@ const ResponsiveContainer = styled.div`
 `;
 
 const Page = styled.div`
-  padding: 2em;
-  margin-bottom: 8em;
+    padding: 0.5em;
 `;
 
 const Header = styled.h1`
-//   margin-bottom: 1em;
+    font-size: 1.5rem;
+
 `;
-
-
 
 const Command = styled.button`
   margin: auto;
@@ -73,9 +69,19 @@ const Command = styled.button`
     cursor: not-allowed;
     color: #666666;
   }  
+
+    /* Mobile-specific styling */
+  @media (max-width: 768px) {
+    font-size: 0.9rem; /* Slightly smaller font for smaller screens */
+    padding: 0.5em 0.8em; /* Reduced padding */
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem; /* Smaller font for very small screens */
+    padding: 0.4em 0.8em; /* Compact padding */
+    border-radius: 3px; /* Slightly less rounded corners for compactness */
+  }
 `;
-
-
 
 const CrosswordMessageBlock = styled.div`
   margin: 2em 0 4em;
@@ -83,14 +89,6 @@ const CrosswordMessageBlock = styled.div`
   gap: 2em;
   max-height: 20em;
 `;
-
-// const Messages = styled.pre`
-//   flex: auto;
-//   background-color: rgb(230, 230, 230);
-//   margin: 0;
-//   padding: 1em;
-//   overflow: auto;
-// `;
 
 const CrosswordWrapper = styled.div`
   max-width: 20em;
@@ -128,10 +126,16 @@ const CrosswordProviderWrapper = styled(CrosswordWrapper)`
   display: flex;
   gap: 1em;
   flex-direction: column;
-  padding-bottom: 5em;
   overflow: hidden;
 
-  .grid{width: 20em;}
+  .grid{
+    width: 20em;
+    margin: auto;
+  }
+    .direction {
+        max-height: 7em;
+        overflow-y: scroll;
+    }
 
 @media (min-width: 468px) {
     flex-direction: row;
@@ -139,7 +143,7 @@ const CrosswordProviderWrapper = styled(CrosswordWrapper)`
 
     .direction {
         width: 10em;
-        max-height: 7em;
+        max-height: 11em;
         overflow: scroll;
         
         .header {
@@ -155,10 +159,12 @@ const CrosswordProviderWrapper = styled(CrosswordWrapper)`
   @media (min-width: 549px) {
     flex-direction: row;
     align-items: flex-start;
+    max-width: 60em;
+
 
     .direction {
-        width: 10em;
-        max-height: 30em;
+        width: 15em;
+        max-height: 35em;
         overflow: scroll;
         
         .header {
@@ -174,11 +180,24 @@ const CrosswordProviderWrapper = styled(CrosswordWrapper)`
 
 const Controls = styled.div`
   display: flex;
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
   margin: 0 auto;
   max-width: 600px; /* Restrict the container's width */
   align-items: center;
   gap: 1em; /* Adjust spacing between items */
   margin-bottom: 1em; /* Add spacing below the row if needed */
+
+  /* Adjust the layout for smaller screens */
+  @media (max-width: 480px) {
+    flex-direction: row; /* Ensure it's still row-based */
+    justify-content: center; /* Center the grid */
+    gap: 0.5em; /* Slightly smaller gaps */
+    & > * {
+      flex: 1 1 calc(50% - 1em); /* 50% width with space for the gap */
+      max-width: calc(50% - 1em); /* Prevent overflow */
+      text-align: center; /* Center align buttons */
+    }
+  }
 `;
 
 const GitHubButton = styled.a`
@@ -204,10 +223,28 @@ const GitHubButton = styled.a`
     margin-right: 0.5em;
     fill: #fff;
   }
+
+    /* Mobile-specific styling */
+  @media (max-width: 768px) {
+    font-size: 0.9rem; /* Slightly smaller text */
+    padding: 0.5em 0.8em; /* Adjust padding for smaller screens */
+
+    svg {
+      margin-right: 0.3em; /* Reduce space between icon and text */
+    }
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.7rem; /* Further reduce text size for very small screens */
+    padding: 0.4em 0.1em; /* Smaller padding */
+    margin-left: 2px; /* Offset slightly to the left */
+    svg {
+      margin-right: 0.1em; /* Minimal margin for small screens */
+    }
+  }
 `;
 
 function Puzzle() {
-    // const crossword = useRef<CrosswordImperative>(null);
 
     const pageTimer = useRef<ReturnType<typeof timer> | null>(null);
 
@@ -247,35 +284,8 @@ function Puzzle() {
         };
     }, []);
 
-    // const focus = useCallback<React.MouseEventHandler>((event) => {
-    //     crossword.current?.focus();
-    // }, []);
-
-    // const fillOneCell = useCallback<React.MouseEventHandler>((event) => {
-    //     crossword.current?.setGuess(0, 2, 'O');
-    // }, []);
-
-    // const fillAllAnswers = useCallback<React.MouseEventHandler>((event) => {
-    //     crossword.current?.fillAllAnswers();
-    // }, []);
-
-    // const reset = useCallback<React.MouseEventHandler>((event) => {
-    //     crossword.current?.reset();
-    // }, []);
-
-    // We don't really *do* anything with callbacks from the Crossword component,
-    // but we can at least show that they are happening.  You would want to do
-    // something more interesting than simply collecting them as messages.
     const messagesRef = useRef<HTMLPreElement>(null);
     const [messages] = useState<string[]>([]);
-
-    // const clearMessages = useCallback<React.MouseEventHandler>((event) => {
-    //     setMessages([]);
-    // }, []);
-
-    // const addMessage = useCallback((message: string) => {
-    //     setMessages((m) => m.concat(`${message}\n`));
-    // }, []);
 
     useEffect(() => {
         if (!messagesRef.current) {
@@ -285,61 +295,7 @@ function Puzzle() {
         messagesRef.current.scrollTo(0, scrollHeight);
     }, [messages]);
 
-    // onCorrect is called with the direction, number, and the correct answer.
-    // const onCorrect = useCallback<Required<CrosswordProps>['onCorrect']>(
-    //     (direction, number, answer) => {
-    //         addMessage(`onCorrect: "${direction}", "${number}", "${answer}"`);
-    //     },
-    //     [addMessage]
-    // );
-
-    // onLoadedCorrect is called with an array of the already-correct answers,
-    // each element itself is an array with the same values as in onCorrect: the
-    // direction, number, and the correct answer.
-    // const onLoadedCorrect = useCallback<
-    //     Required<CrosswordProps>['onLoadedCorrect']
-    // >(
-    //     (answers) => {
-    //         addMessage(
-    //             `onLoadedCorrect:\n${answers
-    //                 .map(
-    //                     ([direction, number, answer]) =>
-    //                         `    - "${direction}", "${number}", "${answer}"`
-    //                 )
-    //                 .join('\n')}`
-    //         );
-    //     },
-    //     [addMessage]
-    // );
-
-    // onCrosswordCorrect is called with a truthy/falsy value.
-    // const onCrosswordCorrect = useCallback<
-    //     Required<CrosswordProps>['onCrosswordCorrect']
-    // >(
-    //     (isCorrect) => {
-    //         addMessage(`onCrosswordCorrect: ${JSON.stringify(isCorrect)}`);
-    //     },
-    //     [addMessage]
-    // );
-
-    // onCellChange is called with the row, column, and character.
-    // const onCellChange = useCallback<Required<CrosswordProps>['onCellChange']>(
-    //     (row, col, char) => {
-    //         addMessage(`onCellChange: "${row}", "${col}", "${char}"`);
-    //     },
-    //     [addMessage]
-    // );
-
-    // all the same functionality, but for the decomposed CrosswordProvider
     const crosswordProvider = useRef<CrosswordProviderImperative>(null);
-
-    // const focusProvider = useCallback<React.MouseEventHandler>((event) => {
-    //     crosswordProvider.current?.focus();
-    // }, []);
-
-    // const fillOneCellProvider = useCallback<React.MouseEventHandler>((event) => {
-    //     crosswordProvider.current?.setGuess(0, 2, 'O');
-    // }, []);
 
     const fillAllAnswersProvider = useCallback<React.MouseEventHandler>(
         (_event) => {
@@ -352,18 +308,8 @@ function Puzzle() {
         crosswordProvider.current?.reset();
     }, []);
 
-    // We don't really *do* anything with callbacks from the Crossword component,
-    // but we can at least show that they are happening.  You would want to do
-    // something more interesting than simply collecting them as messages.
     const messagesProviderRef = useRef<HTMLPreElement>(null);
     const [messagesProvider, setMessagesProvider] = useState<string[]>([]);
-
-    // const clearMessagesProvider = useCallback<React.MouseEventHandler>(
-    //     (event) => {
-    //         setMessagesProvider([]);
-    //     },
-    //     []
-    // );
 
     const addMessageProvider = useCallback((message: string) => {
         setMessagesProvider((m) => m.concat(`${message}\n`));
@@ -377,7 +323,6 @@ function Puzzle() {
         messagesProviderRef.current.scrollTo(0, scrollHeight);
     }, [messagesProvider]);
 
-    // onCorrect is called with the direction, number, and the correct answer.
     const onCorrectProvider = useCallback<
         Required<CrosswordProviderProps>['onCorrect']
     >(
@@ -387,9 +332,6 @@ function Puzzle() {
         [addMessageProvider]
     );
 
-    // onLoadedCorrect is called with an array of the already-correct answers,
-    // each element itself is an array with the same values as in onCorrect: the
-    // direction, number, and the correct answer.
     const onLoadedCorrectProvider = useCallback<
         Required<CrosswordProviderProps>['onLoadedCorrect']
     >(
@@ -406,7 +348,6 @@ function Puzzle() {
         [addMessageProvider]
     );
 
-    // onCrosswordComplete is called with a truthy/falsy value.
     const onCrosswordCompleteProvider = useCallback<
         Required<CrosswordProviderProps>['onCrosswordComplete']
     >(
@@ -416,7 +357,7 @@ function Puzzle() {
                 if (pageTimer.current) {
                     setIsRunning(false);
                     console.log('Elapsed time when completed:', pageTimer.current.seconds);
-                    Popup(`You completed the crossword in ${pageTimer.current.seconds}!`);
+                    Popup(`You completed the gyatword in ${pageTimer.current.seconds}!`);
                 }
             } else {
                 PopupWrong();
@@ -425,7 +366,6 @@ function Puzzle() {
         [addMessageProvider]
     );
 
-    // onCellChange is called with the row, column, and character.
     const onCellChangeProvider = useCallback<
         Required<CrosswordProviderProps>['onCellChange']
     >(
@@ -445,21 +385,19 @@ function Puzzle() {
 
     return (
         <Page>
-            <img src="/logo4.png" alt="logo" width="150" height="150" />
+            <img src="/logo4.png" alt="logo" width="100" height="100" />
             <Header>Crossword, but brainrot</Header>
-            <p>
-                Puzzle refreshes daily
-            </p>
+
             <Controls>
                 <GitHubButton
-                    href="https://github.com/davidchanwz/gyatword-frontend"
+                    href="https://github.com/davidchanwz/gyatword"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
+                        width="15"
+                        height="15"
                         viewBox="0 0 24 24"
                     >
                         <path d="M12 .5C5.65.5.5 5.64.5 12.1c0 5.14 3.36 9.5 8.02 11.03.58.1.79-.25.79-.56 0-.27-.01-1.15-.02-2.08-3.27.71-3.96-1.59-3.96-1.59-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.69.08-.69 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.95.1-.75.4-1.25.72-1.54-2.61-.3-5.36-1.31-5.36-5.81 0-1.29.46-2.35 1.19-3.18-.12-.3-.52-1.52.11-3.17 0 0 .98-.32 3.22 1.2a11.14 11.14 0 0 1 5.84 0c2.24-1.52 3.22-1.2 3.22-1.2.63 1.65.23 2.87.11 3.17.73.83 1.19 1.89 1.19 3.18 0 4.52-2.75 5.51-5.37 5.8.41.36.77 1.08.77 2.18 0 1.57-.01 2.84-.01 3.22 0 .31.2.66.8.56A11.61 11.61 0 0 0 23.5 12.1C23.5 5.64 18.35.5 12 .5z" />
@@ -477,10 +415,9 @@ function Puzzle() {
                 <CrosswordProviderWrapper>
                     <ThemeProvider
                         theme={{
-                            // allowNonSquare: true,
                             columnBreakpoint: '9999px',
-                            // gridBackground: '#acf',
                             cellBackground: '#ffe',
+                            gridBackground: '#C0C2C9',
                             cellBorder: '#fca',
                             numberColor: '#000',
                             focusBackground: '#66ccff',
@@ -493,7 +430,6 @@ function Puzzle() {
                             storageKey="guesses"
                             onCorrect={onCorrectProvider}
                             onLoadedCorrect={onLoadedCorrectProvider}
-                            // onCrosswordCorrect={onCrosswordCorrectProvider}
                             onCrosswordComplete={onCrosswordCompleteProvider}
                             onCellChange={onCellChangeProvider}
                         >
@@ -506,7 +442,6 @@ function Puzzle() {
                     </ThemeProvider>
                 </CrosswordProviderWrapper>
 
-                {/* <Messages ref={messagesProviderRef}>{messagesProvider}</Messages> */}
             </CrosswordMessageBlock>
 
         </Page>
