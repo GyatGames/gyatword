@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Implementation-Title: geny
+Licenses: MIT (MIT License)
+Implementation-Version: 0.7.1
+Implementation-Vendor-Id: com.lihaoyi
+Description: geny
+Scala-Version: 3.0.0
+Implementation-URL: https://github.com/lihaoyi/geny
+URL: https://github.com/lihaoyi/geny
+Created-By: Mill 0.10.0
+Tool: Mill-0.10.0
+Implementation-Vendor: com.lihaoyi
+

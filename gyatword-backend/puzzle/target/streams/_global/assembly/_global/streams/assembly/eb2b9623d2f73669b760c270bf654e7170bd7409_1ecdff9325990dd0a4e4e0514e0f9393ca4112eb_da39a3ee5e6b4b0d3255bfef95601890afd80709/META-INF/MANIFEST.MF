@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Implementation-Title: upickle-implicits
+Licenses: MIT (MIT License)
+Implementation-Version: 2.0.0
+Implementation-Vendor-Id: com.lihaoyi
+Description: upickle-implicits
+Scala-Version: 3.0.2
+Implementation-URL: https://github.com/lihaoyi/upickle
+URL: https://github.com/lihaoyi/upickle
+Created-By: Mill 0.10.3
+Tool: Mill-0.10.3
+Implementation-Vendor: com.lihaoyi
+

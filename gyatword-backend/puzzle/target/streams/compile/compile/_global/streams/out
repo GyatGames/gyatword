@@ -1,0 +1,5 @@
+[0m[[0m[31merror[0m] [0m[0m[31m[31m-- Error: /home/jensen/gyatword-backend/puzzle/main.scala:31:21 ----------------[0m[0m[0m
+[0m[[0m[31merror[0m] [0m[0m[31m31 |[0m    println(newPuzzle[[31m0[0m])[0m
+[0m[[0m[31merror[0m] [0m[0m[31m[31m   |[0m            ^^^^^^^^^^^^[0m[0m
+[0m[[0m[31merror[0m] [0m[0m[31m   |[0m            [33mmethod[0m [35mapply[0m in [33mtrait[0m [35mSeqOps[0m does not take type parameters[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
