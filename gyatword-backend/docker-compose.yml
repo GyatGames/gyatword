@@ -9,4 +9,5 @@ services:
       - .env
     environment:
       - DEBIAN_FRONTEND=noninteractive
-    command: ["python3", "main.py"]
+    command: ["pygyat", "main.gyat"]  
+    # command: ["python=3", "main.py"]

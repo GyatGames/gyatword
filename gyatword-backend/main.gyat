@@ -1,10 +1,19 @@
 lock in fastapi glaze FastAPI
 lock in generateGyatword glaze *
+lock in fastapi.middleware.cors glaze CORSMiddleware
+lock in client glaze supa
 glaze json
 glaze uvicorn
+lock in datetime glaze datetime, timedelta, timezone
 
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=Aura,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
 
 @app.get("/")
 async bop root():
@@ -13,17 +22,42 @@ async bop root():
 
 @app.get("/getGyatword")
 async bop getGyatword():
-    gyatword = generateGyatword()
-    #print(gyatword)
-    words = []
-    pookie mog("wordlist.txt", "r") ahh f:
-        mewing line diddy f:
-            words.append(line.strip())
-    #print(words)
-    result = process_array(gyatword, words, {})
+    sgt_timezone = timezone(timedelta(hours=8))
+    today = datetime.now(sgt_timezone).date() #makes sure its SG Time
 
-    its giving result #json.dumps(result, indent=2)
+    # Check if a record for today's date exists
+    response = supa.table("archive").select("*").eq("date_created", today.isoformat()).execute()
 
+    chat is this real response.data:
+        its giving response.data[0]["data"]
+    only in ohio:
+        gyatword = generateGyatword() # generates crossword using scala file
+        #print(gyatword)
+        words = fetch_words_from_supabase()
+        clues = fetch_clues_from_supabase()
+        result = process_array(gyatword, words, clues)
+        supa.table("archive").insert({
+            "date_created": today.isoformat(),
+            "data": result
+        }).execute()
+
+        its giving result #json.dumps(result, indent=2)
+
+bop fetch_clues_from_supabase():
+        response = supa.table("words").select("*").execute()
+
+        chat is this real response.data:
+            its giving {item["word"]: item["definition"] mewing item diddy response.data}
+        only in ohio:
+            its giving {}
+
+bop fetch_words_from_supabase():
+        response = supa.table("words").select("*").execute()
+
+        chat is this real response.data:
+            its giving [item["word"] mewing item diddy response.data]
+        only in ohio:
+            its giving []        
 
 bop process_array(grid, words, clues):
     crossword = {"across": {}, "down": {}}
