@@ -3,6 +3,15 @@
 **Gyatword** is an engaging crossword puzzle game that challenges your knowledge of brainrot vocabulary. Developed collaboratively by a team of four passionate developers, Gyatword aims to provide users with an exciting and challenging word game experience.
 
 ---
+## Original Repositories
+
+This project was initially split into two repositories before being merged into a monorepo. You can explore the original repositories here:
+
+- **Frontend Repository**: [gyatword-frontend](https://github.com/davidchanwz/gyatword-frontend)
+- **Backend Repository**: [gyatword-backend](https://github.com/davidchanwz/gyatword-backend)
+
+
+---
 
 ## Technologies Used
 
