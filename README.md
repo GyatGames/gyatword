@@ -1,6 +1,6 @@
 # Gyatword
 
-**Gyatword** is an engaging crossword puzzle game that challenges your knowledge of brainrot vocabulary. Developed collaboratively by a team of four passionate developers, Gyatword aims to provide users with an exciting and challenging word game experience.
+**Gyatword** is an engaging crossword puzzle game that challenges your knowledge of brainrot vocabulary. Developed collaboratively by a team of four passionate developers in a short span of 24 hours [NUS Hacknroll](https://hacknroll.nushackers.org), Gyatword aims to provide users with an exciting and challenging word game experience.
 
 ---
 ## Original Repositories
@@ -16,9 +16,9 @@ This project was initially split into two repositories before being merged into 
 ## Technologies Used
 
 - **Frontend**: React TS, Vite, react-crossword, Styled Components.
-- **Backend**: FastAPI, Supabase.
+- **Backend**: Scala, Python, [Pygyat](https://www.pygyat.org), [crossword-puzzle-maker](https://github.com/papauschek/crossword-puzzle-maker), FastAPI, Uvicorn, Supabase, Docker, Coolify (self-hosting), Nginx (reverse proxy).
 
----
+--
 
 ## Try it out
 
