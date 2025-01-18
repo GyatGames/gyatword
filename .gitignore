@@ -23,7 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+**/.env
 .env
 .npm
 node_modules/
 .venv/
+**/.venv/
+**/.DS_Store
