@@ -13,11 +13,23 @@ const StopwatchContainer = styled.div`
     background-color: #000000; /* Very black background */
     padding: 0.5em 1em; /* Add spacing inside the container */
     border-radius: 8px; /* Rounded corners for aesthetics */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow for elevation */
     display: inline-block; /* Makes it behave as an inline block */
     min-width: 120px; /* Ensures consistent width */
     text-align: center; /* Center the text */
     margin: auto;
+
+    /* Mobile-specific styling */
+  @media (max-width: 768px) {
+    font-size: 0.9rem; /* Slightly smaller font for smaller screens */
+    padding: 0.4em 0.8em; /* Reduced padding */
+  }
+
+    /* Mobile-specific styles */
+    @media (max-width: 480px) {
+        font-size: 0.8em; /* Slightly smaller font for smaller screens */
+        padding: 0.4em 0.1em; /* Adjust padding to fit smaller screens */
+        border-radius: 6px; /* Slightly smaller border radius */
+    }
 `;
 
 

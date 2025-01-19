@@ -50,7 +50,7 @@ def generateGyatword():
     
     max_retries = 10000  # Set a maximum number of retries
     retries = 0
-    while (density < 20 or words < 8) and retries < max_retries:
+    while (density < 30 or words < 8) and retries < max_retries:
         finalArray = getResults()
         retries += 1
         

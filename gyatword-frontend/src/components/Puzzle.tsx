@@ -43,16 +43,7 @@ const CrosswordWrapper = styled.div`
 `;
 
 function Puzzle() {
-  type CrosswordData = {
-    [key in "across" | "down"]: {
-      [key: number]: {
-        clue: string;
-        answer: string;
-        row: number;
-        col: number;
-      };
-    };
-  };
+  
 
   const pageTimer = useRef<ReturnType<typeof timer> | null>(null);
 
@@ -295,11 +286,11 @@ function Puzzle() {
                 console.log(`Elapsed Time: ${elapsedTime}`)
               }
             />
-            <button
+            {/* <button
             onClick={() => fillSingleWord()}
             className="">
 
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

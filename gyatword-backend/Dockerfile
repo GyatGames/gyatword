@@ -40,4 +40,4 @@ EXPOSE 8000
 # Run app.py when the container launches
 # CMD ["pygyat", "main.gyat"]
 
-CMD ["python3", "main.py"]
+CMD ["pygyat", "main.gyat"]
