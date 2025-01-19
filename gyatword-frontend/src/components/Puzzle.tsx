@@ -2,12 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import "tailwindcss/tailwind.css";
 import styled from "styled-components";
 import {
-    CrosswordGrid,
-    CrosswordProvider,
-    CrosswordProviderImperative,
-    CrosswordProviderProps,
-    DirectionClues,
-    ThemeProvider,
+  CrosswordImperative,
+  CrosswordGrid,
+  CrosswordProvider,
+  CrosswordProviderImperative,
+  CrosswordProviderProps,
+  DirectionClues,
+  ThemeProvider,
 } from "@jaredreisinger/react-crossword";
 import Popup from "./Popup";
 import PopupWrong from "./PopupWrong";
@@ -43,38 +44,62 @@ const CrosswordWrapper = styled.div`
 `;
 
 function Puzzle() {
-    const pageTimer = useRef<ReturnType<typeof timer> | null>(null);
+  const crossword = useRef<CrosswordImperative>(null);
+  const pageTimer = useRef<ReturnType<typeof timer> | null>(null);
 
-    const [isRunning, setIsRunning] = useState(true);
+  const [isRunning, setIsRunning] = useState(true);
+  const [data, setData] = useState(() => ({ across: {}, down: {} })); // Default data structure
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [titles, setTitles] = useState<string[]>([]);
 
-    const [data, setData] = useState(() => ({ across: {}, down: {} })); // Default data structure
-    const [loading, setLoading] = useState(true);
-    const [error] = useState(null);
+  type CrosswordData = {
+    [key in 'across' | 'down']: {
+      [key: number]: {
+        clue: string;
+        answer: string;
+        row: number;
+        col: number;
+      };
+    };
+  };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(
-                    "https://gyatwordapi.deploy.jensenhshoots.com/getGyatword"
-                );
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const result = await response.json();
-                setData(result);
-            } finally {
-                setLoading(false);
-            }
-        };
+  const generateTitles = (data: { across: { [key: number]: any }; down: { [key: number]: any } }): string[] => {
+    const acrossTitles = Object.keys(data.across).map((key) => `${key} across`);
+    const downTitles = Object.keys(data.down).map((key) => `${key} down`);
+    return [...acrossTitles, ...downTitles];
+  };
 
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        if (!pageTimer.current) {
-            pageTimer.current = timer();
-            console.log("Page timer started");
+  useEffect(() => {
+    const fetchData = async (): Promise<CrosswordData> => {
+      try {
+        const response = await fetch(
+          "https://gyatwordapi.deploy.jensenhshoots.com/getGyatword"
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const result = await response.json();
+        setData(result);
+        return result;
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData().then((newData) => {
+      const generatedTitles = generateTitles(newData);
+      setTitles(generatedTitles);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!pageTimer.current) {
+      pageTimer.current = timer();
+      console.log("Page timer started");
+    }
+
 
         // Cleanup logic for HMR
         return () => {
@@ -118,163 +143,154 @@ function Puzzle() {
         if (!messagesProviderRef.current) {
             return;
         }
-        const { scrollHeight } = messagesProviderRef.current;
-        messagesProviderRef.current.scrollTo(0, scrollHeight);
-    }, [messagesProvider]);
+      } else {
+        PopupWrong();
+      }
+    },
+    [addMessageProvider]
+  );
 
-    const onCorrectProvider = useCallback<
-        Required<CrosswordProviderProps>["onCorrect"]
-    >(
-        (direction, number, answer) => {
-            addMessageProvider(`onCorrect: "${direction}", "${number}", "${answer}"`);
-        },
-        [addMessageProvider]
-    );
+  const onCellChangeProvider = useCallback<
+    Required<CrosswordProviderProps>["onCellChange"]
+  >(
+    (row, col, char) => {
+      addMessageProvider(`onCellChange: "${row}", "${col}", "${char}"`);
+    },
+    [addMessageProvider]
+  );
 
-    const onLoadedCorrectProvider = useCallback<
-        Required<CrosswordProviderProps>["onLoadedCorrect"]
-    >(
-        (answers) => {
-            addMessageProvider(
-                `onLoadedCorrect:\n${answers
-                    .map(
-                        ([direction, number, answer]) =>
-                            `    - "${direction}", "${number}", "${answer}"`
-                    )
-                    .join("\n")}`
-            );
-        },
-        [addMessageProvider]
-    );
+  const fillSingleWord = useCallback(() => {
+    setTitles((prevTitles) => {
+      if (prevTitles.length === 0) {
+        console.error("No titles available to fill.");
+        return prevTitles;
+      }
 
-    const onCrosswordCompleteProvider = useCallback<
-        Required<CrosswordProviderProps>["onCrosswordComplete"]
-    >(
-        (isCorrect) => {
-            addMessageProvider(`onCrosswordCorrect: ${JSON.stringify(isCorrect)}`);
-            if (isCorrect) {
-                if (pageTimer.current) {
-                    setIsRunning(false);
-                    console.log(
-                        "Elapsed time when completed:",
-                        pageTimer.current.seconds
-                    );
-                    Popup(`You completed the crossword in ${pageTimer.current.seconds}!`);
-                }
-            } else {
-                PopupWrong();
-            }
-        },
-        [addMessageProvider]
-    );
+      const randomIndex = Math.floor(Math.random() * prevTitles.length);
+      const title = prevTitles[randomIndex];
+      const [num, dir] = title.split(" ");
+      const wordData = data[dir][num];
 
-    const onCellChangeProvider = useCallback<
-        Required<CrosswordProviderProps>["onCellChange"]
-    >(
-        (row, col, char) => {
-            addMessageProvider(`onCellChange: "${row}", "${col}", "${char}"`);
-        },
-        [addMessageProvider]
-    );
+      if (!wordData) {
+        console.error("Invalid word data");
+        return prevTitles;
+      }
 
-    if (loading) {
-        return <p>Loading crossword...</p>;
-    }
+      const { answer, row, col } = wordData;
+      const isAcross = dir === "across";
 
-    if (error) {
-        return <p>{error}</p>;
-    }
+      // Fill the crossword
+      answer.split("").forEach((letter: string, index: number) => {
+        const currentRow = isAcross ? row : row + index;
+        const currentCol = isAcross ? col + index : col;
+        crosswordProvider.current?.setGuess(currentRow, currentCol, letter);
+      });
 
-    // function getRandomInt(min: number, max: number) {
-    //         const minCeiled = Math.ceil(min);
-    //         const maxFloored = Math.floor(max);
-    //         return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
-    //     }
+      // Remove the used title
+      return prevTitles.filter((t) => t !== title);
+    });
+  }, [data]);
 
-    //     const generateTitles = (data: { across: { [key: number]: any }; down: { [key: number]: any } }): string[] => {
-    //         const acrossTitles = Object.keys(data.across).map((key) => `${key} across`);
-    //         const downTitles = Object.keys(data.down).map((key) => `${key} down`);
-    //         return [...acrossTitles, ...downTitles]; // Combine both lists
-    //     };
+  if (loading) {
+    return <p>Loading crossword...</p>;
+  }
 
-    //     const [titles, setTitles] = useState<string[]>([]);
+  if (error) {
+    return <p>{error}</p>;
+  }
 
-    //     useEffect(() => {
-    //         const generatedTitles = generateTitles(data);
-    //         setTitles(generatedTitles);
-    //     }, [data]);
+  return (
+    <div className="p-3 bg-slate-500 no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex flex-row justify-between">
+        <div className="flex flex-col justify-between items-center ">
+          <img
+            src="/logo4.png"
+            alt="logo"
+            width="150"
+            height="150"
+            className=""
+          />
+          <div className="text-center px-2 py-1 sm:px-5">
+            <p className="text-xs whitespace-nowrap sm:text-2xl sm:font-bold">
+              Crossword, but brainrot
+            </p>
+            <p className="text-xs whitespace-nowrap font-thin sm:text-lg text-center">
+              Puzzle refreshes daily
+            </p>
+          </div>
+        </div>
 
-    //     //console.log(titles);
+        <div className="flex flex-row items-center gap-2 gap-y-4 max-w-2xl sm:pr-10 ">
+          <div className="gap-5">
+            <button
+              onClick={fillAllAnswersProvider}
+              className="mb-1 whitespace-nowrap mx-auto py-2 px-4 text-lg font-bold text-white bg-red-600 border-none rounded cursor-pointer transition-transform duration-200 ease-in-out hover:bg-red-700 hover:scale-105 active:bg-blue-800 active:scale-95 focus:outline-none focus:ring-3 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-600"
+            >
+              Reveal all
+            </button>
+            <button
+              onClick={resetProvider}
+              className="mx-auto py-2 px-4 text-lg font-bold text-white bg-red-600 border-none rounded cursor-pointer transition-transform duration-200 ease-in-out hover:bg-red-700 hover:scale-105 active:bg-blue-800 active:scale-95 focus:outline-none focus:ring-3 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-600"
+            >
+              Reset
+            </button>
+            <button
+              onClick={fillSingleWord}
+              className="mb-1 whitespace-nowrap mx-auto py-2 px-4 text-lg font-bold text-white bg-red-600 border-none rounded cursor-pointer transition-transform duration-200 ease-in-out hover:bg-red-700 hover:scale-105 active:bg-blue-800 active:scale-95 focus:outline-none focus:ring-3 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-600"
+            >
+              Reveal one
+            </button>
+          </div>
+          <div className="">
+            <Stopwatch
+              running={isRunning}
+              onComplete={(elapsedTime) =>
+                console.log(`Elapsed Time: ${elapsedTime}`)
+              }
+            />
+          </div>
+        </div>
+      </div>
 
-    //     // const removeTitle = (titleToRemove: string) => {
-    //     //     setTitles((prevTitles) => prevTitles.filter((title) => title !== titleToRemove));
-    //     // };
-
-    //     const fillSingleWord = useCallback(() => {
-    //         setTitles((prevTitles) => {
-    //             if (prevTitles.length === 0) {
-    //                 console.error('No titles available to fill.');
-    //                 return prevTitles; // Return early if no titles
-    //             }
-
-    //             const randomIndex = Math.floor(Math.random() * prevTitles.length);
-    //             const title = prevTitles[randomIndex];
-    //             const updatedTitles = prevTitles.filter((t) => t !== title);
-
-    //             // Update the state immediately
-    //             setTitles(updatedTitles);
-
-    //             const [num, dir] = title.split(" ");
-    //             const wordData = data[dir][num]; // Get the word data from `data`
-
-    //             const { answer, row, col } = wordData;
-    //             const isAcross = dir === 'across';
-
-    //             // Loop through each letter in the word and fill it
-    //             answer.split('').forEach((letter: string, index: number) => {
-    //                 const currentRow = isAcross ? row : row + index;
-    //                 const currentCol = isAcross ? col + index : col;
-    //                 crosswordProvider.current?.setGuess(currentRow, currentCol, letter);
-    //             });
-
-    //             return updatedTitles; // Return updated titles for debugging if needed
-    //         });
-    //     }, [crosswordProvider, data]);
-
-    return (
-        <div className="w-screen h-screen p-3 bg-slate-500 no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <div className="flex flex-row justify-between sm:justify-around">
-                <div className="flex flex-col sm:flex-row justify-between items-center ">
-                    <img
-                        src="/logo4.png"
-                        alt="logo"
-                        width="150"
-                        height="150"
-                        className=""
+      <div className="py-3 h-screen mx-auto py-8 px-10">
+        <div className="">
+          <ThemeProvider
+            theme={{
+              columnBreakpoint: "9999px",
+              cellBackground: "#ffe",
+              cellBorder: "#fca",
+              numberColor: "#000",
+              focusBackground: "#66ccff",
+              highlightBackground: "#99ccff",
+            }}
+          >
+            <CrosswordWrapper>
+              <CrosswordProvider
+                ref={crosswordProvider}
+                data={data}
+                storageKey="guesses"
+                onCorrect={onCorrectProvider}
+                onLoadedCorrect={onLoadedCorrectProvider}
+                onCrosswordComplete={onCrosswordCompleteProvider}
+                onCellChange={onCellChangeProvider}
+              >
+                <div className="flex sm:flex-row flex-col gap-5 text-sm  justify-around pr-4">
+                  <div className="w-full sm:w-5/12 sm:h-1/2 w-full h-full">
+                    <CrosswordGrid
+                      theme={{
+                        gridBackground: "#333", // Darker grey background
+                        cellBackground: "#333",
+                        cellBorder: "#656666", // Light grey borders
+                        textColor: "#FFF",
+                        numberColor: "#AAA",
+                        focusBackground: "#545454",
+                        highlightBackground: "#6b6565",
+                      }}
                     />
-                    <div className="text-center px-2 py-1 sm:px-5">
-                        <p className="text-xs whitespace-nowrap sm:text-2xl sm:font-bold">
-                            Crossword, but brainrot
-                        </p>
-                        <p className="text-xs whitespace-nowrap font-thin sm:text-lg text-center">
-                            Puzzle refreshes daily
-                        </p>
-                    </div>
-                </div>
-
-                <div className="flex flex-col items-center gap-y-1 sm:gap-2 sm:gap-y-4 max-w-2xl sm:pr-10 ">
-                    <div className="">
-                        <Stopwatch
-                            running={isRunning}
-                            onComplete={(elapsedTime) =>
-                                console.log(`Elapsed Time: ${elapsedTime}`)
-                            }
-                        />
-                        {/* <button
-            onClick={() => fillSingleWord()}
-            className="">
-
-            </button> */}
+                  </div>
+                  <div className="flex flex-col h-2/3 sm:flex-row sm:w-1/3 sm:h-full text-left gap-8">
+                    <div className="w-full h-28 sm:h-full overflow-y-auto">
+                      <DirectionClues direction="across" />
                     </div>
                     <div className="gap-5">
                         <button
