@@ -321,24 +321,24 @@ function Puzzle() {
               </CrosswordProvider>
             </CrosswordWrapper>
           </ThemeProvider>
-        </div>
-        <a
-          href="https://github.com/davidchanwz/gyatword-frontend"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs whitespace-nowrap inline-flex items-center float-none sm:float-right sm:bg-black  text-white sm:text-lg sm:font-bold sm:py-2 sm:px-3 rounded transition-transform duration-200 ease-in-out hover:bg-gray-800 hover:scale-105"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="19"
-            height="19"
-            viewBox="0 0 24 24"
-            className="mr-1 sm:mr-2 fill-current"
+          <a
+            href="https://github.com/davidchanwz/gyatword-frontend"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="static bottom-13 left-0 text-xs whitespace-nowrap inline-flex items-center float-none sm:float-right sm:bg-black  text-white sm:text-lg sm:font-bold sm:py-2 sm:px-3 rounded transition-transform duration-200 ease-in-out hover:bg-gray-800 hover:scale-105"
           >
-            <path d="M12 .5C5.65.5.5 5.64.5 12.1c0 5.14 3.36 9.5 8.02 11.03.58.1.79-.25.79-.56 0-.27-.01-1.15-.02-2.08-3.27.71-3.96-1.59-3.96-1.59-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.69.08-.69 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.95.1-.75.4-1.25.72-1.54-2.61-.3-5.36-1.31-5.36-5.81 0-1.29.46-2.35 1.19-3.18-.12-.3-.52-1.52.11-3.17 0 0 .98-.32 3.22 1.2a11.14 11.14 0 0 1 5.84 0c2.24-1.52 3.22-1.2 3.22-1.2.63 1.65.23 2.87.11 3.17.73.83 1.19 1.89 1.19 3.18 0 4.52-2.75 5.51-5.37 5.8.41.36.77 1.08.77 2.18 0 1.57-.01 2.84-.01 3.22 0 .31.2.66.8.56A11.61 11.61 0 0 0 23.5 12.1C23.5 5.64 18.35.5 12 .5z" />
-          </svg>
-          By SharmaTech
-        </a>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="19"
+              height="19"
+              viewBox="0 0 24 24"
+              className="mr-1 sm:mr-2 fill-current"
+            >
+              <path d="M12 .5C5.65.5.5 5.64.5 12.1c0 5.14 3.36 9.5 8.02 11.03.58.1.79-.25.79-.56 0-.27-.01-1.15-.02-2.08-3.27.71-3.96-1.59-3.96-1.59-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.69.08-.69 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.95.1-.75.4-1.25.72-1.54-2.61-.3-5.36-1.31-5.36-5.81 0-1.29.46-2.35 1.19-3.18-.12-.3-.52-1.52.11-3.17 0 0 .98-.32 3.22 1.2a11.14 11.14 0 0 1 5.84 0c2.24-1.52 3.22-1.2 3.22-1.2.63 1.65.23 2.87.11 3.17.73.83 1.19 1.89 1.19 3.18 0 4.52-2.75 5.51-5.37 5.8.41.36.77 1.08.77 2.18 0 1.57-.01 2.84-.01 3.22 0 .31.2.66.8.56A11.61 11.61 0 0 0 23.5 12.1C23.5 5.64 18.35.5 12 .5z" />
+            </svg>
+            By SharmaTech
+          </a>
+        </div>
       </div>
     </div>
   );
