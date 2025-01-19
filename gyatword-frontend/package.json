@@ -11,11 +11,15 @@
   },
   "dependencies": {
     "@jaredreisinger/react-crossword": "^5.2.0",
+    "autoprefixer": "^10.4.20",
     "immer": "^10.1.1",
+    "postcss": "^8.5.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-share": "^5.1.2",
     "styled-components": "^6.1.14",
-    "sweetalert2": "^11.15.10"
+    "sweetalert2": "^11.15.10",
+    "tailwindcss": "^3.4.17"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
