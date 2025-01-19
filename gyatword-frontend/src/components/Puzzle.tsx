@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import "tailwindcss/tailwind.css";
 import styled from "styled-components";
 import {
+  CrosswordImperative,
   CrosswordGrid,
   CrosswordProvider,
   CrosswordProviderImperative,
@@ -43,18 +44,34 @@ const CrosswordWrapper = styled.div`
 `;
 
 function Puzzle() {
-  
-
+  const crossword = useRef<CrosswordImperative>(null);
   const pageTimer = useRef<ReturnType<typeof timer> | null>(null);
 
   const [isRunning, setIsRunning] = useState(true);
-
   const [data, setData] = useState(() => ({ across: {}, down: {} })); // Default data structure
   const [loading, setLoading] = useState(true);
-  const [error] = useState(null);
+  const [error, setError] = useState(null);
+  const [titles, setTitles] = useState<string[]>([]);
+
+  type CrosswordData = {
+    [key in 'across' | 'down']: {
+      [key: number]: {
+        clue: string;
+        answer: string;
+        row: number;
+        col: number;
+      };
+    };
+  };
+
+  const generateTitles = (data: { across: { [key: number]: any }; down: { [key: number]: any } }): string[] => {
+    const acrossTitles = Object.keys(data.across).map((key) => `${key} across`);
+    const downTitles = Object.keys(data.down).map((key) => `${key} down`);
+    return [...acrossTitles, ...downTitles];
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<CrosswordData> => {
       try {
         const response = await fetch(
           "https://gyatwordapi.deploy.jensenhshoots.com/getGyatword"
@@ -64,12 +81,17 @@ function Puzzle() {
         }
         const result = await response.json();
         setData(result);
+        return result;
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchData();
+    fetchData().then((newData) => {
+      const generatedTitles = generateTitles(newData);
+      setTitles(generatedTitles);
+    });
   }, []);
 
   useEffect(() => {
@@ -179,6 +201,38 @@ function Puzzle() {
     [addMessageProvider]
   );
 
+  const fillSingleWord = useCallback(() => {
+    setTitles((prevTitles) => {
+      if (prevTitles.length === 0) {
+        console.error("No titles available to fill.");
+        return prevTitles;
+      }
+
+      const randomIndex = Math.floor(Math.random() * prevTitles.length);
+      const title = prevTitles[randomIndex];
+      const [num, dir] = title.split(" ");
+      const wordData = data[dir][num];
+
+      if (!wordData) {
+        console.error("Invalid word data");
+        return prevTitles;
+      }
+
+      const { answer, row, col } = wordData;
+      const isAcross = dir === "across";
+
+      // Fill the crossword
+      answer.split("").forEach((letter: string, index: number) => {
+        const currentRow = isAcross ? row : row + index;
+        const currentCol = isAcross ? col + index : col;
+        crosswordProvider.current?.setGuess(currentRow, currentCol, letter);
+      });
+
+      // Remove the used title
+      return prevTitles.filter((t) => t !== title);
+    });
+  }, [data]);
+
   if (loading) {
     return <p>Loading crossword...</p>;
   }
@@ -186,62 +240,6 @@ function Puzzle() {
   if (error) {
     return <p>{error}</p>;
   }
-
-  // function getRandomInt(min: number, max: number) {
-  //         const minCeiled = Math.ceil(min);
-  //         const maxFloored = Math.floor(max);
-  //         return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
-  //     }
-
-  //     const generateTitles = (data: { across: { [key: number]: any }; down: { [key: number]: any } }): string[] => {
-  //         const acrossTitles = Object.keys(data.across).map((key) => `${key} across`);
-  //         const downTitles = Object.keys(data.down).map((key) => `${key} down`);
-  //         return [...acrossTitles, ...downTitles]; // Combine both lists
-  //     };
-
-  //     const [titles, setTitles] = useState<string[]>([]);
-
-  //     useEffect(() => {
-  //         const generatedTitles = generateTitles(data);
-  //         setTitles(generatedTitles);
-  //     }, [data]);
-
-  //     //console.log(titles);
-
-  //     // const removeTitle = (titleToRemove: string) => {
-  //     //     setTitles((prevTitles) => prevTitles.filter((title) => title !== titleToRemove));
-  //     // };
-
-  //     const fillSingleWord = useCallback(() => {
-  //         setTitles((prevTitles) => {
-  //             if (prevTitles.length === 0) {
-  //                 console.error('No titles available to fill.');
-  //                 return prevTitles; // Return early if no titles
-  //             }
-
-  //             const randomIndex = Math.floor(Math.random() * prevTitles.length);
-  //             const title = prevTitles[randomIndex];
-  //             const updatedTitles = prevTitles.filter((t) => t !== title);
-
-  //             // Update the state immediately
-  //             setTitles(updatedTitles);
-
-  //             const [num, dir] = title.split(" ");
-  //             const wordData = data[dir][num]; // Get the word data from `data`
-
-  //             const { answer, row, col } = wordData;
-  //             const isAcross = dir === 'across';
-
-  //             // Loop through each letter in the word and fill it
-  //             answer.split('').forEach((letter: string, index: number) => {
-  //                 const currentRow = isAcross ? row : row + index;
-  //                 const currentCol = isAcross ? col + index : col;
-  //                 crosswordProvider.current?.setGuess(currentRow, currentCol, letter);
-  //             });
-
-  //             return updatedTitles; // Return updated titles for debugging if needed
-  //         });
-  //     }, [crosswordProvider, data]);
 
   return (
     <div className="p-3 bg-slate-500 no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -278,6 +276,12 @@ function Puzzle() {
             >
               Reset
             </button>
+            <button
+              onClick={fillSingleWord}
+              className="mb-1 whitespace-nowrap mx-auto py-2 px-4 text-lg font-bold text-white bg-red-600 border-none rounded cursor-pointer transition-transform duration-200 ease-in-out hover:bg-red-700 hover:scale-105 active:bg-blue-800 active:scale-95 focus:outline-none focus:ring-3 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-600"
+            >
+              Reveal one
+            </button>
           </div>
           <div className="">
             <Stopwatch
@@ -286,11 +290,6 @@ function Puzzle() {
                 console.log(`Elapsed Time: ${elapsedTime}`)
               }
             />
-            {/* <button
-            onClick={() => fillSingleWord()}
-            className="">
-
-            </button> */}
           </div>
         </div>
       </div>
