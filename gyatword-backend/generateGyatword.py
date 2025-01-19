@@ -9,7 +9,6 @@ def generateGyatword():
     
     density = 0
     words = 0
-    finalArray = []
 
     def fetch_words_from_supabase():
         """
@@ -25,10 +24,11 @@ def generateGyatword():
 
     def getResults():
         #get list of words from supabase and save it to a temporary word file
-        wordlist = fetch_words_from_supabase()
-        random.shuffle(wordlist)
+        allwords = fetch_words_from_supabase()
+        random.shuffle(allwords)
+        wordlist = allwords[0:40]
         with open("temp_wordlist.txt", "w") as f:
-            f.write("\n".join(wordlist[0:40]))
+            f.write("\n".join(wordlist))
 
         # Run the Scala application and capture the output
         result = subprocess.run(["java", "-jar", jar_path, "12", "12", "temp_wordlist.txt"], capture_output=True, text=True)
@@ -48,17 +48,18 @@ def generateGyatword():
         array = []
         for line in lines[1:]:
             array.append(list(line))
-        return array
+        return [array, wordlist]
     
     max_retries = 10000000000  # Set a maximum number of retries
     retries = 0
+    result = []
     while (density < 50 or words < 10) and retries < max_retries:
-        finalArray = getResults()
+        result = getResults()
         retries += 1
         
         #print("Density:", density)
         #print("Words:", words)
     #print(finalArray)
-    return finalArray 
+    return result
 # Call the function
 #generateCrossword()

@@ -31,11 +31,12 @@ async def getGyatword():
     if response.data:
         return response.data[0]["data"]
     else:
-        gyatword = generateGyatword() # generates crossword using scala file
+        result = generateGyatword()
+        gyatword = result[0] # generates crossword using scala file
         #print(gyatword)
-        words = fetch_words_from_supabase()
+        wordlist = result[1]
         clues = fetch_clues_from_supabase()
-        result = process_array(gyatword, words, clues)
+        result = process_array(gyatword, wordlist, clues)
         supa.table("archive").insert({
             "date_created": today.isoformat(),
             "data": result
@@ -51,14 +52,6 @@ def fetch_clues_from_supabase():
         else:
             return {}
         
-def fetch_words_from_supabase():
-        response = supa.table("words").select("*").execute()
-    
-        if response.data:
-            return [item["word"] for item in response.data]
-        else:
-            return []        
-
 def process_array(grid, words, clues):
     crossword = {"across": {}, "down": {}}
     rows = len(grid)
