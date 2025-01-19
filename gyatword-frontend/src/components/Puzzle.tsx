@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import "tailwindcss/tailwind.css";
 import styled from "styled-components";
 import {
-  CrosswordImperative,
   CrosswordGrid,
   CrosswordProvider,
   CrosswordProviderImperative,
@@ -44,7 +43,6 @@ const CrosswordWrapper = styled.div`
 `;
 
 function Puzzle() {
-  const crossword = useRef<CrosswordImperative>(null);
   const pageTimer = useRef<ReturnType<typeof timer> | null>(null);
 
   const [isRunning, setIsRunning] = useState(true);
@@ -54,7 +52,7 @@ function Puzzle() {
   const [titles, setTitles] = useState<string[]>([]);
 
   type CrosswordData = {
-    [key in 'across' | 'down']: {
+    [key in "across" | "down"]: {
       [key: number]: {
         clue: string;
         answer: string;
@@ -64,7 +62,10 @@ function Puzzle() {
     };
   };
 
-  const generateTitles = (data: { across: { [key: number]: any }; down: { [key: number]: any } }): string[] => {
+  const generateTitles = (data: {
+    across: { [key: number]: any };
+    down: { [key: number]: any };
+  }): string[] => {
     const acrossTitles = Object.keys(data.across).map((key) => `${key} across`);
     const downTitles = Object.keys(data.down).map((key) => `${key} down`);
     return [...acrossTitles, ...downTitles];
@@ -145,13 +146,21 @@ function Puzzle() {
     PopupWrong();
   }, [addMessageProvider]);
 
-  const onCorrectProvider = useCallback((direction, number, answer) => {
-    addMessageProvider(`onCorrect: "${direction}", "${number}", "${answer}"`);
-  }, [addMessageProvider]);
+  const onCorrectProvider = useCallback(
+    (direction, number, answer) => {
+      addMessageProvider(`onCorrect: "${direction}", "${number}", "${answer}"`);
+    },
+    [addMessageProvider]
+  );
 
-  const onLoadedCorrectProvider = useCallback((direction, number, answer) => {
-    addMessageProvider(`onLoadedCorrect: "${direction}", "${number}", "${answer}"`);
-  }, [addMessageProvider]);
+  const onLoadedCorrectProvider = useCallback(
+    (direction, number, answer) => {
+      addMessageProvider(
+        `onLoadedCorrect: "${direction}", "${number}", "${answer}"`
+      );
+    },
+    [addMessageProvider]
+  );
 
   const onCrosswordCompleteProvider = useCallback(() => {
     addMessageProvider("onCrosswordComplete");
@@ -207,9 +216,9 @@ function Puzzle() {
   }
 
   return (
-    <div className="p-3 bg-slate-500 no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-col justify-between items-center ">
+    <div className="w-screen h-screen p-3 bg-slate-500 no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex flex-row justify-between sm:justify-around">
+        <div className="flex flex-col sm:flex-row justify-between items-center ">
           <img
             src="/logo4.png"
             alt="logo"
@@ -227,27 +236,7 @@ function Puzzle() {
           </div>
         </div>
 
-        <div className="flex flex-row items-center gap-2 gap-y-4 max-w-2xl sm:pr-10 ">
-          <div className="gap-5">
-            <button
-              onClick={fillAllAnswersProvider}
-              className="mb-1 whitespace-nowrap mx-auto py-2 px-4 text-lg font-bold text-white bg-red-600 border-none rounded cursor-pointer transition-transform duration-200 ease-in-out hover:bg-red-700 hover:scale-105 active:bg-blue-800 active:scale-95 focus:outline-none focus:ring-3 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-600"
-            >
-              Reveal all
-            </button>
-            <button
-              onClick={resetProvider}
-              className="mx-auto py-2 px-4 text-lg font-bold text-white bg-red-600 border-none rounded cursor-pointer transition-transform duration-200 ease-in-out hover:bg-red-700 hover:scale-105 active:bg-blue-800 active:scale-95 focus:outline-none focus:ring-3 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-600"
-            >
-              Reset
-            </button>
-            <button
-              onClick={fillSingleWord}
-              className="mb-1 whitespace-nowrap mx-auto py-2 px-4 text-lg font-bold text-white bg-red-600 border-none rounded cursor-pointer transition-transform duration-200 ease-in-out hover:bg-red-700 hover:scale-105 active:bg-blue-800 active:scale-95 focus:outline-none focus:ring-3 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-600"
-            >
-              Reveal one
-            </button>
-          </div>
+        <div className="flex flex-col items-center gap-y-1 sm:gap-2 sm:gap-y-4 max-w-2xl sm:pr-10 ">
           <div className="">
             <Stopwatch
               running={isRunning}
@@ -255,20 +244,46 @@ function Puzzle() {
                 console.log(`Elapsed Time: ${elapsedTime}`)
               }
             />
+            {/* <button
+            onClick={() => fillSingleWord()}
+            className="">
+
+            </button> */}
+          </div>
+          <div className="gap-5">
+            <button
+              onClick={fillSingleWord}
+              className="mb-1 mr-2 py-1 sm:py-2 px-4 text-lg font-bold text-white bg-red-600 border-none rounded cursor-pointer transition-transform duration-200 ease-in-out hover:bg-red-700 hover:scale-105 active:bg-blue-800 active:scale-95 focus:outline-none focus:ring-3 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-600"
+            >
+              Hint
+            </button>
+            <button
+              onClick={fillAllAnswersProvider}
+              className="mb-1 whitespace-nowrap mx-auto py-1 sm:py-2 px-4 text-lg font-bold text-white bg-red-600 border-none rounded cursor-pointer transition-transform duration-200 ease-in-out hover:bg-red-700 hover:scale-105 active:bg-blue-800 active:scale-95 focus:outline-none focus:ring-3 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-600 mr-2"
+            >
+              Reveal all
+            </button>
+            <button
+              onClick={resetProvider}
+              className="py-1 sm:py-2 px-4 text-lg font-bold text-white bg-red-600 border-none rounded cursor-pointer transition-transform duration-200 ease-in-out hover:bg-red-700 hover:scale-105 active:bg-blue-800 active:scale-95 focus:outline-none focus:ring-3 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-600"
+            >
+              Reset
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="py-3 h-screen mx-auto py-8 px-10">
+      <div className="py-3 h-screen mx-auto px-10">
         <div className="">
           <ThemeProvider
             theme={{
-              columnBreakpoint: "9999px",
-              cellBackground: "#ffe",
-              cellBorder: "#fca",
-              numberColor: "#000",
-              focusBackground: "#66ccff",
-              highlightBackground: "#99ccff",
+              gridBackground: "#333", // Darker grey background
+              cellBackground: "#6f6e70",
+              cellBorder: "#656666", // Light grey borders
+              textColor: "#FFF",
+              numberColor: "#e8e3e3",
+              focusBackground: "#69b1f0",
+              highlightBackground: "#ae81d6",
             }}
           >
             <CrosswordWrapper>
@@ -280,31 +295,22 @@ function Puzzle() {
                 onLoadedCorrect={onLoadedCorrectProvider}
                 onCrosswordComplete={onCrosswordCompleteProvider}
                 onCellChange={onCellChangeProvider}
+                useStorage={false}
               >
                 <div className="flex sm:flex-row flex-col gap-5 text-sm  justify-around pr-4">
                   <div className="w-full sm:w-5/12 sm:h-1/2 w-full h-full">
-                    <CrosswordGrid
-                      theme={{
-                        gridBackground: "#333", // Darker grey background
-                        cellBackground: "#333",
-                        cellBorder: "#656666", // Light grey borders
-                        textColor: "#FFF",
-                        numberColor: "#AAA",
-                        focusBackground: "#545454",
-                        highlightBackground: "#6b6565",
-                      }}
-                    />
+                    <CrosswordGrid />
                   </div>
                   <div className="flex flex-col h-2/3 sm:flex-row sm:w-1/3 sm:h-full text-left gap-8">
                     <div className="w-full h-28 sm:h-full overflow-y-auto">
-                      <DirectionClues 
+                      <DirectionClues
                         direction="across"
                         //@ts-ignore
                         label={<span className="font-bold">ACROSS</span>} // Apply bold styling
                       />
                     </div>
                     <div className="w-full h-28 sm:h-full overflow-y-auto">
-                      <DirectionClues 
+                      <DirectionClues
                         direction="down"
                         //@ts-ignore
                         label={<span className="font-bold">DOWN</span>} // Apply bold styling
