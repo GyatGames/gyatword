@@ -102,7 +102,7 @@ export const Gyatword = () => {
                 onCrosswordComplete={onCrosswordCompleteProvider}
             >
                 <div className="w-screen h-fit max-h-screen-minus-57 no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    <div className="flex flex-row gap-x-6 items-center mx-auto justify-center py-1 md:py-2 bg-background border-b-2">
+                    <div className="flex flex-row gap-x-6 items-center mx-auto justify-center py-0.5 md:py-2 bg-background border-b-2">
                         <Stopwatch
                             running={isRunning}
                             onComplete={(elapsedTime) =>
@@ -113,7 +113,7 @@ export const Gyatword = () => {
                             target="_blank"
                             rel="noreferrer noopener"
                             onClick={resetProvider}
-                            className={`cursor-pointer text-xs md:text-sm w-16 ${buttonVariants({
+                            className={`cursor-pointer text-xs h-6 md:h-10 md:text-sm w-16 ${buttonVariants({
                                 variant: "destructive",
 
                             })}`
@@ -126,7 +126,7 @@ export const Gyatword = () => {
                             target="_blank"
                             rel="noreferrer noopener"
                             onClick={fillAllAnswersProvider}
-                            className={`cursor-pointer text-xs md:text-sm w-16 ${buttonVariants({
+                            className={`cursor-pointer text-xs h-6 md:h-10 md:text-sm w-16 ${buttonVariants({
                                 variant: "outline",
                             })}`}
                         >

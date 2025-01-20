@@ -48,7 +48,7 @@ const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvid
             target="_blank"
             rel="noreferrer noopener"
             onClick={handleFillSelectedAnswer}
-            className={`cursor-pointer text-xs md:text-sm w-16 ${buttonVariants({
+            className={`cursor-pointer text-xs h-6 md:h-10 md:text-sm w-16 ${buttonVariants({
                 variant: "outline",
             })}`}
         >

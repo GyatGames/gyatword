@@ -86,14 +86,14 @@ function MobileClueDisplay() {
             ?.clue || 'No clue available';
 
     return (
-        <div className="mobile-clue-display flex max-h-14 items-center justify-between bg-primary p-2 rounded shadow-md">
+        <div className="mobile-clue-display flex max-h-11 items-center justify-between bg-primary p-2 rounded shadow-md">
             <button
                 onClick={handlePreviousClue}
                 className="px-4 py-2 rounded focus:outline-none"
             >
                 &lt;
             </button>
-            <div className="text-left text-xs overflow-y-scroll font-bold">
+            <div className="text-left text-xxs overflow-y-scroll font-bold">
                 {currentClue.number ? `${currentClue.number}: ${currentClueText}` : 'No clue selected'}
             </div>
             <button
