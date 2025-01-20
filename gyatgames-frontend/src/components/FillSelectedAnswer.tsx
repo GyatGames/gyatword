@@ -4,9 +4,11 @@ import { buttonVariants } from "./ui/button";
 
 type FillSelectedAnswerProps = {
     crosswordProvider: React.RefObject<any>;
+    onHintUsed: () => void; // Callback for tracking hints
+
 };
 
-const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvider }) => {
+const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvider, onHintUsed }) => {
     const { selectedPosition, selectedDirection, selectedNumber, clues } = useContext(CrosswordContext);
 
     const handleFillSelectedAnswer = () => {
@@ -39,6 +41,9 @@ const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvid
         }
 
         console.log(`Filled answer for clue ${selectedDirection} ${selectedNumber}`);
+        console.log("FillSelectedAnswer button clicked.");
+        onHintUsed(); // Increment hint count
+
     };
 
     return (
@@ -57,3 +62,7 @@ const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvid
 };
 
 export default FillSelectedAnswer;
+
+function onHintUsed() {
+    throw new Error("Function not implemented.");
+}
