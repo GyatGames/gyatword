@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* *=========== Blue theme =========== */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 220 50% 70%; /* Lighter and duller primary blue */
+    --primary-foreground: 220 80% 96%;
+    --secondary: 220 20% 90%; /* Lighter and duller secondary blue */
+    --secondary-foreground: 220 10% 20%;
+    --muted: 220 15% 92%; /* Muted dull blue */
+    --muted-foreground: 220 10% 40%;
+    --accent: 220 15% 90%; /* Duller and lighter accent */
+    --accent-foreground: 220 10% 20%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 15% 88%; /* Duller and lighter border */
+    --input: 220 15% 88%; /* Duller and lighter input */
+    --ring: 220 50% 70%; /* Duller and lighter ring */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 220 14.3% 15%; /* Slightly brighter dark background */
+    --foreground: 0 0% 95%;
+    --card: 224 9.8% 20%; /* Brighter dark card */
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 220 40% 60%; /* Duller and lighter primary blue for dark mode */
+    --primary-foreground: 220 50% 15%;
+    --secondary: 220 15% 30%; /* Duller and lighter secondary blue */
+    --secondary-foreground: 0 0% 95%;
+    --muted: 220 15% 25%; /* Muted dull dark blue */
+    --muted-foreground: 220 10% 70%; /* Duller muted foreground */
+    --accent: 220 15% 25%; /* Duller and lighter dark accent */
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 35%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 220 15% 25%; /* Duller and lighter border */
+    --input: 220 15% 25%; /* Duller and lighter input */
+    --ring: 220 40% 50%; /* Duller and lighter ring */
+  }
+}
+/* Add styles for react-simple-keyboard here */
+@layer base {
+  /* Keyboard container */
+  .my-keyboard-theme {
+    @apply bg-card text-card-foreground rounded-md box-border font-sans overflow-hidden p-1 touch-auto select-none w-full;
+  }
+
+  /* Row styles */
+  .my-keyboard-theme .hg-row {
+    @apply flex; /* Match default flexbox layout */
+  }
+
+  /* Row spacing */
+  .my-keyboard-theme .hg-row:not(:last-child) {
+    margin-bottom: 0.25rem; /* Match the default 5px spacing */
+  }
+
+  /* Button spacing */
+  .my-keyboard-theme .hg-row .hg-button-container,
+  .my-keyboard-theme .hg-row .hg-button:not(:last-child) {
+    margin-right: 0.25rem; /* Match the default 5px spacing */
+  }
+
+  /* Button styles */
+  .my-keyboard-theme .hg-button {
+    @apply flex items-center justify-center bg-background border-b border-muted rounded-md shadow-sm cursor-pointer h-10 py-1 px-2;
+    box-shadow: 0 0 3px -1px rgba(0, 0, 0, 0.3); /* Custom shadow to match */
+    -webkit-tap-highlight-color: transparent; /* Prevent tap highlight */
+  }
+
+  /* Button hover/active states */
+  .my-keyboard-theme .hg-button:hover {
+    @apply bg-muted text-muted-foreground;
+  }
+  .my-keyboard-theme .hg-button:active {
+    @apply bg-secondary text-secondary-foreground;
+    transform: scale(0.95); /* Add a press-down effect */
+  }
+
+  /* Flex grow for buttons */
+  .my-keyboard-theme .hg-button {
+    flex-grow: 1;
+  }
+
+  /* Button width */
+  .my-keyboard-theme .hg-button.hg-standardBtn {
+    width: 20px; /* Adjust as needed */
+  }
+
+  /* Dark mode */
+  .dark .my-keyboard-theme {
+    @apply bg-background text-foreground;
+  }
+  .dark .my-keyboard-theme .hg-button {
+    @apply bg-muted text-muted-foreground border-muted;
+  }
+  .dark .my-keyboard-theme .hg-button:hover {
+    @apply bg-accent text-accent-foreground;
+  }
+  .dark .my-keyboard-theme .hg-button:active {
+    @apply bg-primary text-primary-foreground;
+  }
+}
+
+@layer base {
+  .swal-container {
+    @apply bg-background text-foreground flex justify-center items-center;
+  }
+
+  .swal-popup {
+    @apply bg-card text-card-foreground rounded-lg shadow-lg p-6 border border-muted;
+  }
+
+  .swal-title {
+    @apply text-lg font-bold text-foreground;
+  }
+
+  .swal-html-container {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .swal-confirm {
+    @apply bg-primary text-primary-foreground px-4 py-2 rounded-md font-semibold hover:bg-primary/80;
+  }
+
+  .dark .swal-container {
+    /* @apply bg-background text-foreground; */
+  }
+
+  .dark .swal-popup {
+    @apply bg-card text-card-foreground border-muted;
+  }
+
+  .dark .swal-title {
+    @apply text-foreground;
+  }
+
+  .dark .swal-html-container {
+    @apply text-muted-foreground;
+  }
+
+  .dark .swal-confirm {
+    @apply bg-primary text-foreground hover:bg-primary/70;
+  }
+}
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
