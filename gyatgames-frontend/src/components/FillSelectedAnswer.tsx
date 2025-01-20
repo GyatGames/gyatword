@@ -20,22 +20,20 @@ const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvid
             return;
         }
 
-        const { row, col } = selectedPosition;
-        if (typeof row !== "number" || typeof col !== "number") {
-            console.warn("Invalid selected position.");
-            return;
-        }
-
+        // Find the selected clue
         const selectedClue = clues[selectedDirection]?.find((clue) => clue.number === selectedNumber);
         if (!selectedClue) {
             console.warn("Selected clue not found in clues data.");
             return;
         }
 
+        const { row: startRow, col: startCol } = selectedClue; // Use clue's starting position
         const answer = selectedClue.answer;
+
+        // Fill the answer starting from the clue's starting position
         for (let i = 0; i < answer.length; i++) {
-            const guessRow = selectedDirection === "across" ? row : row + i;
-            const guessCol = selectedDirection === "across" ? col + i : col;
+            const guessRow = selectedDirection === "across" ? startRow : startRow + i;
+            const guessCol = selectedDirection === "across" ? startCol + i : startCol;
 
             crosswordProvider.current?.setGuess(guessRow, guessCol, answer[i]);
         }
