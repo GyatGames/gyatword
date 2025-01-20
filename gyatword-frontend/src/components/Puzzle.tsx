@@ -9,7 +9,6 @@ import {
   DirectionClues,
   ThemeProvider,
 } from "@jaredreisinger/react-crossword";
-import Popup from "./Popup";
 import PopupWrong from "./PopupWrong";
 import { timer } from "./timer";
 import Stopwatch from "./Stopwatch";
@@ -154,7 +153,7 @@ function Puzzle() {
   );
 
   const onLoadedCorrectProvider = useCallback(
-    (direction, number, answer) => {
+    (direction:string, number:number, answer:string) => {
       addMessageProvider(
         `onLoadedCorrect: "${direction}", "${number}", "${answer}"`
       );
@@ -292,7 +291,6 @@ function Puzzle() {
                 data={data}
                 storageKey="guesses"
                 onCorrect={onCorrectProvider}
-                onLoadedCorrect={onLoadedCorrectProvider}
                 onCrosswordComplete={onCrosswordCompleteProvider}
                 onCellChange={onCellChangeProvider}
                 useStorage={false}
