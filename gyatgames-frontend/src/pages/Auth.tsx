@@ -9,7 +9,7 @@ import {
 
 export default function Auth() {
     return (
-        <div className="flex h-screen-minus-57 md:mt-10 items-start justify-center no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="flex max-h-screen-minus-57 md:mt-10 items-start justify-center no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <Tabs defaultValue="login" className="w-[400px]">
                 {/* Tab Navigation */}
                 <TabsList className="grid grid-cols-2 w-full">
