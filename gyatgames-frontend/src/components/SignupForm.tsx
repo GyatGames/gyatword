@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 
 export function SignupForm({
     className,
@@ -41,38 +41,38 @@ export function SignupForm({
 
         // Validate passwords match
         if (password !== confirmPassword) {
-            Swal.fire({
-                title: "Signup Failed",
-                text: "Passwords do not match.",
-                icon: "error",
-                confirmButtonText: "OK",
-                customClass: {
-                    container: 'swal-container',
-                    popup: 'swal-popup',
-                    title: 'swal-title',
-                    htmlContainer: 'swal-html-container',
-                    confirmButton: 'swal-confirm',
-                },
-            });
+            // Swal.fire({
+            //     title: "Signup Failed",
+            //     text: "Passwords do not match.",
+            //     icon: "error",
+            //     confirmButtonText: "OK",
+            //     customClass: {
+            //         container: 'swal-container',
+            //         popup: 'swal-popup',
+            //         title: 'swal-title',
+            //         htmlContainer: 'swal-html-container',
+            //         confirmButton: 'swal-confirm',
+            //     },
+            // });
             return;
         }
 
         try {
             setLoading(true);
             await signup(username, email, password); // Call the signup function
-            Swal.fire({
-                title: "Signup Successful",
-                text: "Your account has been created successfully!",
-                icon: "success",
-                confirmButtonText: "OK",
-                customClass: {
-                    container: 'swal-container',
-                    popup: 'swal-popup',
-                    title: 'swal-title',
-                    htmlContainer: 'swal-html-container',
-                    confirmButton: 'swal-confirm',
-                },
-            });
+            // Swal.fire({
+            //     title: "Signup Successful",
+            //     text: "Your account has been created successfully!",
+            //     icon: "success",
+            //     confirmButtonText: "OK",
+            //     customClass: {
+            //         container: 'swal-container',
+            //         popup: 'swal-popup',
+            //         title: 'swal-title',
+            //         htmlContainer: 'swal-html-container',
+            //         confirmButton: 'swal-confirm',
+            //     },
+            // });
         } catch (err: any) {
             // Extract error message from backend response
             const errorMessage =
@@ -80,19 +80,21 @@ export function SignupForm({
                 err.response?.data?.message || // Fallback to message
                 "Signup failed. Please try again."; // Default message if neither exists
 
-            Swal.fire({
-                title: "Signup Failed",
-                text: errorMessage,
-                icon: "error",
-                confirmButtonText: "OK",
-                customClass: {
-                    container: 'swal-container',
-                    popup: 'swal-popup',
-                    title: 'swal-title',
-                    htmlContainer: 'swal-html-container',
-                    confirmButton: 'swal-confirm',
-                },
-            });
+            // Swal.fire({
+            //     title: "Signup Failed",
+            //     text: errorMessage,
+            //     icon: "error",
+            //     confirmButtonText: "OK",
+            //     customClass: {
+            //         container: 'swal-container',
+            //         popup: 'swal-popup',
+            //         title: 'swal-title',
+            //         htmlContainer: 'swal-html-container',
+            //         confirmButton: 'swal-confirm',
+            //     },
+            // });
+            console.error("Error occurred:", errorMessage);
+
         } finally {
             setLoading(false);
         }
