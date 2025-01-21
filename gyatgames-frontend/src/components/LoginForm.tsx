@@ -35,6 +35,13 @@ export function LoginForm({
                 text: err.message || "Failed to login. Please try again.",
                 icon: "error",
                 confirmButtonText: "OK",
+                customClass: {
+                    container: 'swal-container',
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    htmlContainer: 'swal-html-container',
+                    confirmButton: 'swal-confirm',
+                },
             });
         } finally {
             setLoading(false);

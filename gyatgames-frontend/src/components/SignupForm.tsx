@@ -45,6 +45,13 @@ export function SignupForm({
                 text: "Passwords do not match.",
                 icon: "error",
                 confirmButtonText: "OK",
+                customClass: {
+                    container: 'swal-container',
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    htmlContainer: 'swal-html-container',
+                    confirmButton: 'swal-confirm',
+                },
             });
             return;
         }
@@ -57,15 +64,30 @@ export function SignupForm({
                 text: "Your account has been created successfully!",
                 icon: "success",
                 confirmButtonText: "OK",
+                customClass: {
+                    container: 'swal-container',
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    htmlContainer: 'swal-html-container',
+                    confirmButton: 'swal-confirm',
+                },
             });
-        } catch (err) {
+        } catch (err: any) {
+            // Extract error message from backend response
+            const errorMessage = err.response?.data?.message || "Signup failed. Please try again.";
             Swal.fire({
                 title: "Signup Failed",
-                text: "An error occurred while creating your account. Please try again.",
+                text: errorMessage,
                 icon: "error",
                 confirmButtonText: "OK",
+                customClass: {
+                    container: 'swal-container',
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    htmlContainer: 'swal-html-container',
+                    confirmButton: 'swal-confirm',
+                },
             });
-            console.error("Signup error:", err);
         } finally {
             setLoading(false);
         }

@@ -1,7 +1,9 @@
 import { clsx, type ClassValue } from "clsx"
 import { useState, useEffect } from "react";
 import { twMerge } from "tailwind-merge"
-
+import { useAuth } from "@/context/AuthContext";
+import { Navigate } from "react-router-dom";
+import Auth from "@/pages/Auth"; 
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -61,3 +63,4 @@ const darkTheme = {
 };
 
 export { lightTheme, darkTheme };
+
