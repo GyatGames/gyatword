@@ -30,7 +30,6 @@ export function LeaderboardTable({ data }: LeaderboardTableProps) {
 
     return (
         <Table>
-            {/* <TableCaption>Leaderboard for the fastest crossword completion times.</TableCaption> */}
             <TableHeader>
                 <TableRow>
                     <TableHead className="w-[50px]">Rank</TableHead>

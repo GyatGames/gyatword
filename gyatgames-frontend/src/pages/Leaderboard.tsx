@@ -33,8 +33,8 @@ export const Leaderboard = () => {
     return (
         <div className="max-h-screen-minus-57">
             <Tabs defaultValue="global" className="w-full">
-                <div className="mt-2 flex flex-col items-center justify-center">
-                    <TabsList className="flex justify-center md:mx-6">
+                <div className="mt-2 mx-auto flex flex-col items-center justify-center w-[400px]">
+                    <TabsList className="grid grid-cols-2 w-full">
                         <TabsTrigger value="global">Global Leaderboard</TabsTrigger>
                         <TabsTrigger value="friends">Friends Leaderboard</TabsTrigger>
                     </TabsList>
