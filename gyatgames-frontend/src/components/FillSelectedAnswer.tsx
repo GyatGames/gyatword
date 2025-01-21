@@ -62,7 +62,3 @@ const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvid
 };
 
 export default FillSelectedAnswer;
-
-function onHintUsed() {
-    throw new Error("Function not implemented.");
-}

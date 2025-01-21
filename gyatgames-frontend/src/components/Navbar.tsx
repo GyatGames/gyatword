@@ -35,10 +35,10 @@ const routeList: RouteProps[] = [
     to: "/about",
     label: "About",
   },
-  {
-    to: "/auth",
-    label: "Auth",
-  },
+  // {
+  //   to: "/auth",
+  //   label: "Auth",
+  // },
 ];
 
 export const Navbar = () => {
