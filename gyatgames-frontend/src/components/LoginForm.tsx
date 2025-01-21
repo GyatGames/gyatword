@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import Swal from "sweetalert2";
 
 export function LoginForm({
     className,
@@ -19,18 +20,22 @@ export function LoginForm({
     const { login } = useAuth(); // No need for `any` type now
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null); // Reset error state
         setLoading(true);
 
         try {
             await login(email, password); // Attempt login
         } catch (err: any) {
-            setError(err.message || "Failed to login.");
+            // Show SweetAlert2 popup for errors
+            Swal.fire({
+                title: "Login Failed",
+                text: err.message || "Failed to login. Please try again.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
         } finally {
             setLoading(false);
         }
@@ -84,9 +89,6 @@ export function LoginForm({
                                 Login with Google
                             </Button>
                         </div>
-                        {error && (
-                            <p className="mt-2 text-red-500 text-sm">{error}</p>
-                        )}
                     </form>
                 </CardContent>
             </Card>

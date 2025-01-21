@@ -31,9 +31,9 @@ const friendsLeaderboardData = [
 
 export const Leaderboard = () => {
     return (
-        <div className="max-h-screen-minus-57">
+        <div className="flex max-h-screen-minus-57 md:mt-10 items-start justify-center no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <Tabs defaultValue="global" className="w-full">
-                <div className="mt-2 mx-auto flex flex-col items-center justify-center w-[400px]">
+                <div className=" mx-auto flex flex-col items-center justify-center w-[400px]">
                     <TabsList className="grid grid-cols-2 w-full">
                         <TabsTrigger value="global">Global Leaderboard</TabsTrigger>
                         <TabsTrigger value="friends">Friends Leaderboard</TabsTrigger>

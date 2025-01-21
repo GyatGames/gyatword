@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Swal from "sweetalert2";
 
 export function SignupForm({
     className,
@@ -23,7 +24,6 @@ export function SignupForm({
         password: "",
         confirmPassword: "",
     });
-    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
     // Handle form value changes
@@ -35,22 +35,36 @@ export function SignupForm({
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null);
 
         const { username, email, password, confirmPassword } = formValues;
 
         // Validate passwords match
         if (password !== confirmPassword) {
-            setError("Passwords do not match.");
+            Swal.fire({
+                title: "Signup Failed",
+                text: "Passwords do not match.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
             return;
         }
 
         try {
             setLoading(true);
             await signup(username, email, password); // Call the signup function
-            console.log("Signup successful!");
+            Swal.fire({
+                title: "Signup Successful",
+                text: "Your account has been created successfully!",
+                icon: "success",
+                confirmButtonText: "OK",
+            });
         } catch (err) {
-            setError("Signup failed. Please try again.");
+            Swal.fire({
+                title: "Signup Failed",
+                text: "An error occurred while creating your account. Please try again.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
             console.error("Signup error:", err);
         } finally {
             setLoading(false);
@@ -69,9 +83,6 @@ export function SignupForm({
                 <CardContent>
                     <form onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-6">
-                            {error && (
-                                <p className="text-red-500 text-sm">{error}</p>
-                            )}
                             <div className="grid gap-2">
                                 <Label htmlFor="username">Username</Label>
                                 <Input
