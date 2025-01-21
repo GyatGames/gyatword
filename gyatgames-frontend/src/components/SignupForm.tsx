@@ -32,6 +32,11 @@ export function SignupForm({
         setFormValues((prev) => ({ ...prev, [id]: value }));
     };
 
+    const handleButtonClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault(); // Prevent default behavior
+        await handleSubmit(new Event("submit") as unknown as React.FormEvent<HTMLFormElement>);
+    };
+
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -110,7 +115,8 @@ export function SignupForm({
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit}>
+                    <div>
+                        {/* <form onSubmit={handleSubmit}> */}
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="username">Username</Label>
@@ -159,6 +165,7 @@ export function SignupForm({
                                 />
                             </div>
                             <Button
+                                onClick={handleButtonClick}
                                 type="submit"
                                 className="w-full"
                                 disabled={loading}
@@ -169,7 +176,8 @@ export function SignupForm({
                                 Sign Up with Google
                             </Button>
                         </div>
-                    </form>
+                        {/* </form> */}
+                    </div>
                 </CardContent>
             </Card>
         </div>
