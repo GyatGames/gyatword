@@ -80,6 +80,9 @@ export function LoginForm({
                             <Button type="submit" className="w-full" disabled={loading}>
                                 {loading ? "Logging in..." : "Login"}
                             </Button>
+                            <Button variant="outline" className="w-full">
+                                Login with Google
+                            </Button>
                         </div>
                         {error && (
                             <p className="mt-2 text-red-500 text-sm">{error}</p>

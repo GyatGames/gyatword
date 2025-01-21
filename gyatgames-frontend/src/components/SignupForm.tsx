@@ -125,6 +125,9 @@ export function SignupForm({
                             >
                                 {loading ? "Signing Up..." : "Sign Up"}
                             </Button>
+                            <Button variant="outline" className="w-full">
+                                Sign Up with Google
+                            </Button>
                         </div>
                     </form>
                 </CardContent>
