@@ -35,6 +35,7 @@ export function SignupForm({
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        console.log("Prevented default form submission"); // Debug log
 
         const { username, email, password, confirmPassword } = formValues;
 
@@ -74,7 +75,11 @@ export function SignupForm({
             });
         } catch (err: any) {
             // Extract error message from backend response
-            const errorMessage = err.response?.data?.message || "Signup failed. Please try again.";
+            const errorMessage =
+                err.response?.data?.detail || // Check for detail field
+                err.response?.data?.message || // Fallback to message
+                "Signup failed. Please try again."; // Default message if neither exists
+
             Swal.fire({
                 title: "Signup Failed",
                 text: errorMessage,
