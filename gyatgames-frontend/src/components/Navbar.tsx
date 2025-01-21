@@ -50,9 +50,9 @@ export const Navbar = () => {
           <NavigationMenuItem className="font-bold flex">
             <Link
               to="/"
-              className="ml-2 font-bold text-xl flex no-underline hover:text-blue-500"
+              className="ml-2 font-bold text-xl flex no-underline hover:text-blue-500 "
             >
-              GyatGames
+              Gyatword
             </Link>
           </NavigationMenuItem>
 

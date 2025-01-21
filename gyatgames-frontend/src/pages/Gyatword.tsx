@@ -42,6 +42,35 @@ export const Gyatword = () => {
     const isMobile = useIsMobile();
     const theme = isDarkMode ? darkTheme : lightTheme;
 
+    
+    // hide native keyboard on mobile
+    useEffect(() => {
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    
+        if (isMobile) {
+          // Ensure the effect runs after the crossword grid has rendered
+          const inputElement = document.querySelector('input[aria-label="crossword-input"]');
+          if (inputElement) {
+            inputElement.setAttribute("readOnly", "true"); // Make the input read-only
+            inputElement.setAttribute("display", "none"); // Make the input read-only
+
+          }
+        }
+      }, []); // Empty dependency array ensures this runs once after mount
+
+      useEffect(() => {
+        const observer = new MutationObserver(() => {
+          const inputElement = document.querySelector('input[aria-label="crossword-input"]');
+          if (inputElement) {
+            inputElement.setAttribute("readOnly", "true");
+          }
+        });
+      
+        observer.observe(document.body, { childList: true, subtree: true });
+      
+        return () => observer.disconnect();
+      }, []);
+
     // fill all answers prop
     const fillAllAnswersProvider = useCallback<React.MouseEventHandler>(
         (_event) => {
@@ -195,17 +224,6 @@ export const Gyatword = () => {
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        
-                        {/* <FillSelectedAnswer
-                            crosswordProvider={crosswordProvider}
-                            onHintUsed={() => {
-                                console.log("Previous hint count:", hintCount);
-                                setHintCount((prev) => {
-                                    console.log("Incrementing hint count:", prev + 1);
-                                    return prev + 1;
-                                });
-                            }}
-                        /> */}
                     </div>
                     <div className="flex flex-col w-full md:gap-5 md:flex-row max-h-fit lg:px-16 md:px-8">
                         <div className="w-full max-w-2xl items-center justify-center mx-auto">
