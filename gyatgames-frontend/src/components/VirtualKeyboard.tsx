@@ -4,16 +4,20 @@ import 'react-simple-keyboard/build/css/index.css';
 import { CrosswordContext } from '@jaredreisinger/react-crossword';
 
 const VirtualKeyboard: React.FC = () => {
-    const { handleInputChange, handleInputKeyDown, selectedPosition } = useContext(CrosswordContext);
+    const { handleInputChange, handleInputKeyDown, selectedPosition, gridData } = useContext(CrosswordContext);
 
     const handleKeyPress = (button: string) => {
         console.log('Button pressed:', button);
-        
-        // Check if a cell is selected
-        if (!selectedPosition) {
-            console.warn("No cell selected in the crossword grid.");
+        console.log('selected cell: ', selectedPosition);
+
+        // Validate if the selected cell is part of the crossword grid
+        const isValidCell = gridData?.[selectedPosition.row]?.[selectedPosition.col]?.used;
+
+        if (!isValidCell) {
+            console.warn("No valid cell selected in the crossword grid.");
             return;
         }
+
         if (button === '{bksp}') {
             // Handle Backspace
             const backspaceEvent = new KeyboardEvent('keydown', {
