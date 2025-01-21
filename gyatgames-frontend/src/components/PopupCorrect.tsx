@@ -20,6 +20,7 @@ const PopupCorrect = (message: string) => {
 
     const updateCountdown = () => {
         const { hours, minutes, seconds } = calculateTimeToMidnight();
+        seconds < 10 ? `0${seconds}` : seconds;
         const countdownText = `Gyatword refreshing in: ${hours}h ${minutes}m ${seconds}s`;
         Swal.update({
             html: `<p>${message}</p><p>${countdownText}</p>`
