@@ -4,9 +4,11 @@ import { buttonVariants } from "./ui/button";
 
 type FillSelectedAnswerProps = {
     crosswordProvider: React.RefObject<any>;
+    onHintUsed: () => void; // Callback for tracking hints
+
 };
 
-const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvider }) => {
+const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvider, onHintUsed }) => {
     const { selectedPosition, selectedDirection, selectedNumber, clues } = useContext(CrosswordContext);
 
     const handleFillSelectedAnswer = () => {
@@ -20,27 +22,28 @@ const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvid
             return;
         }
 
-        const { row, col } = selectedPosition;
-        if (typeof row !== "number" || typeof col !== "number") {
-            console.warn("Invalid selected position.");
-            return;
-        }
-
+        // Find the selected clue
         const selectedClue = clues[selectedDirection]?.find((clue) => clue.number === selectedNumber);
         if (!selectedClue) {
             console.warn("Selected clue not found in clues data.");
             return;
         }
 
+        const { row: startRow, col: startCol } = selectedClue; // Use clue's starting position
         const answer = selectedClue.answer;
+
+        // Fill the answer starting from the clue's starting position
         for (let i = 0; i < answer.length; i++) {
-            const guessRow = selectedDirection === "across" ? row : row + i;
-            const guessCol = selectedDirection === "across" ? col + i : col;
+            const guessRow = selectedDirection === "across" ? startRow : startRow + i;
+            const guessCol = selectedDirection === "across" ? startCol + i : startCol;
 
             crosswordProvider.current?.setGuess(guessRow, guessCol, answer[i]);
         }
 
         console.log(`Filled answer for clue ${selectedDirection} ${selectedNumber}`);
+        console.log("FillSelectedAnswer button clicked.");
+        onHintUsed(); // Increment hint count
+
     };
 
     return (
@@ -48,7 +51,7 @@ const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvid
             target="_blank"
             rel="noreferrer noopener"
             onClick={handleFillSelectedAnswer}
-            className={`cursor-pointer text-xs md:text-sm w-16 ${buttonVariants({
+            className={`cursor-pointer text-xs h-6 md:h-10 md:text-sm w-16 ${buttonVariants({
                 variant: "outline",
             })}`}
         >

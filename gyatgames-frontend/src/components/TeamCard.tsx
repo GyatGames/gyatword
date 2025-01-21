@@ -8,7 +8,6 @@ export interface TeamCardProps {
     role: string;
     image: string;
     github: string;
-    twitter: string;
     linkedin: string;
     description: string;
 }

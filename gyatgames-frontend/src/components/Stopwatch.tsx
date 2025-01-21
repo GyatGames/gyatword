@@ -6,7 +6,7 @@ type StopwatchProps = {
 };
 
 const Stopwatch: React.FC<StopwatchProps> = ({ running, onComplete }) => {
-    const [elapsedTime, setElapsedTime] = useState(1);
+    const [elapsedTime, setElapsedTime] = useState(0);
 
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;

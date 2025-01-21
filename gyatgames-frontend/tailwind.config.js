@@ -75,6 +75,11 @@ export const theme = {
     maxHeight: {
       'grid': '600px', // Example: Add a custom max-h-97 class
     },
+    fontSize: {
+      'xxs': '.6rem',
+      'xxxs': '.5rem'
+
+    }
   },
 };
 export const plugins = [
