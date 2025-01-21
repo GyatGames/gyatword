@@ -1,18 +1,18 @@
 import React, { useContext } from "react";
 import { CrosswordContext } from "@jaredreisinger/react-crossword";
 //import { buttonVariants } from "./ui/button";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
-type FillSelectedAnswerProps = {
+type FillSelectedCellProps = {
     crosswordProvider: React.RefObject<any>;
     onHintUsed: () => void; // Callback for tracking hints
 
 };
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
-const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvider, onHintUsed }) => {
+const FillSelectedCell: React.FC<FillSelectedCellProps> = ({ crosswordProvider, onHintUsed }) => {
     const { selectedPosition, selectedDirection, selectedNumber, clues } = useContext(CrosswordContext);
 
-    const handleFillSelectedAnswer = () => {
+    const FillSelectedCell = () => {
         console.log("selectedPosition:", selectedPosition);
         console.log("selectedDirection:", selectedDirection);
         console.log("selectedNumber:", selectedNumber);
@@ -30,38 +30,38 @@ const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvid
             return;
         }
 
+        const { row, col } = selectedPosition; // Use clue's starting position
         const { row: startRow, col: startCol } = selectedClue; // Use clue's starting position
         const answer = selectedClue.answer;
+        console.log(answer);
+        
+        const diff = row - startRow + col - startCol;
+        console.log("diff", diff);
 
-        // Fill the answer starting from the clue's starting position
-        for (let i = 0; i < answer.length; i++) {
-            const guessRow = selectedDirection === "across" ? startRow : startRow + i;
-            const guessCol = selectedDirection === "across" ? startCol + i : startCol;
+        crosswordProvider.current?.setGuess(row, col, answer[diff]);
 
-            crosswordProvider.current?.setGuess(guessRow, guessCol, answer[i]);
-        }
 
         console.log(`Filled answer for clue ${selectedDirection} ${selectedNumber}`);
         console.log("FillSelectedAnswer button clicked.");
         onHintUsed(); // Increment hint count
 
     };
-
     return (
+
         <a
             target="_blank"
             rel="noreferrer noopener"
-            onClick={handleFillSelectedAnswer}
+            onClick={FillSelectedCell}
             //className={`cursor-pointer text-xs h-6 md:h-10 md:text-sm w-16 ${buttonVariants({
                 //variant: "outline",
             //})}`}
         >
             <DropdownMenuItem>
-                Word
+                Cell
             </DropdownMenuItem>
         </a>
 
     );
 };
 
-export default FillSelectedAnswer;
+export default FillSelectedCell;
