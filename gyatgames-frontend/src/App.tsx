@@ -9,7 +9,6 @@ import { CrosswordDataProvider } from './context/CrosswordDataContext';
 import "./App.css";
 import { AuthProvider } from './context/AuthContext';
 import AuthRoute from './components/AuthRoute';
-import Auth from './pages/Auth';
 function App() {
 
   return (
@@ -23,7 +22,7 @@ function App() {
               <Route path="/" element={<Hero />} />
               <Route path="/about" element={<About />} />
               <Route path="/gyatword" element={<Gyatword />} />
-              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth" element={<AuthRoute />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
 
             </Routes>
