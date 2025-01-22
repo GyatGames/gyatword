@@ -249,7 +249,7 @@ def oAuth_callback(code: str):
     token_response_data = token_response.json()
 
     if "error" in token_response_data:
-        print(token_response_data)
+        print("token_response_data: ", token_response_data)
         raise HTTPException(status_code=400, detail="Failed to fetch access token")
 
     access_token = token_response_data["access_token"]
