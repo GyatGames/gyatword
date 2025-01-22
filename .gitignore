@@ -30,3 +30,4 @@ node_modules/
 .venv/
 **/.venv/
 **/.DS_Store
+.metals/metals.lock.db
