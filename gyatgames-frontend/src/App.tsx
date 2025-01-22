@@ -25,6 +25,7 @@ function App() {
               <Route path="/auth" element={<AuthRoute />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
 
+
             </Routes>
           </CrosswordDataProvider>
         </BrowserRouter>

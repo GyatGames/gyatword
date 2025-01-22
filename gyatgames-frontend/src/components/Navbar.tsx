@@ -10,12 +10,14 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  //SheetDescription
 } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { buttonVariants } from "./ui/button";
 import { Menu } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
+import { Profile } from "../pages/Profile";
 
 interface RouteProps {
   to: string;
@@ -35,6 +37,10 @@ const routeList: RouteProps[] = [
     to: "/about",
     label: "About",
   },
+  // {
+  //   to: "/profile",
+  //   label: "Profile",
+  // }
   // {
   //   to: "/auth",
   //   label: "Auth",
@@ -57,11 +63,11 @@ export const Navbar = () => {
           </NavigationMenuItem>
 
           {/* Mobile */}
-          <span className="flex md:hidden">
+          <span className="flex md:hidden justify-between gap-2">
             <ModeToggle />
 
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger className="px-2">
+              <SheetTrigger className="pr-2">
                 <Menu className="flex md:hidden h-5 w-5" />
               </SheetTrigger>
 
@@ -79,7 +85,9 @@ export const Navbar = () => {
                     >
                       {label}
                     </Link>
+
                   ))}
+
                   <a
                     href="https://github.com/leoMirandaa/shadcn-landing-page.git"
                     target="_blank"
@@ -93,7 +101,11 @@ export const Navbar = () => {
                   </a>
                 </nav>
               </SheetContent>
+              <Profile />
             </Sheet>
+
+
+
           </span>
 
           {/* Desktop */}
@@ -107,7 +119,10 @@ export const Navbar = () => {
                 {label}
               </Link>
             ))}
+
           </nav>
+
+
 
           <div className="hidden md:flex gap-2">
             <a
@@ -121,6 +136,8 @@ export const Navbar = () => {
             </a>
 
             <ModeToggle />
+            <Profile />
+
           </div>
         </NavigationMenuList>
       </NavigationMenu>
