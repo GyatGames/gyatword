@@ -10,10 +10,11 @@ type User = {
 type AuthContextType = {
     user: User | null;
     isAuthenticated: boolean;
-    loading: boolean;
     login: (email: string, password: string) => Promise<void>;
     signup: (username: string, email: string, password: string) => Promise<void>;
     logout: () => void;
+    oAuthLogin: () => void; // Redirect user to Google OAuth
+    handleOAuthCallback: (code: string) => Promise<void>; // Handle OAuth callback
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,12 +23,10 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
 
     // Function to handle login
     const login = async (email: string, password: string) => {
         try {
-            setLoading(true);
             const response = await axios.post("/api/login", { email, password });
             setUser(response.data.user); // Assuming the backend returns user data
             localStorage.setItem("authToken", response.data.token); // Save token for future requests
@@ -35,14 +34,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             console.error("Login failed:", error);
             throw error; // Rethrow error for the UI to handle
         } finally {
-            setLoading(false);
         }
     };
 
     // Function to handle signup
     const signup = async (username: string, email: string, password: string) => {
         try {
-            setLoading(true);
             const response = await axios.post("/api/signup", { username, email, password });
             setUser(response.data.user); // Assuming the backend returns user data
             localStorage.setItem("authToken", response.data.token); // Save token for future requests
@@ -50,7 +47,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             console.error("Signup failed:", error);
             throw error; // Rethrow error for the UI to handle
         } finally {
-            setLoading(false);
         }
     };
 
@@ -60,12 +56,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem("authToken");
     };
 
+
+    // **OAuth login function**
+    const oAuthLogin = () => {
+        // Redirect the user to the Google OAuth login page
+        window.location.href = "/api/oAuth_login";
+    };
+
+    // **Handle OAuth callback function**
+    const handleOAuthCallback = async (code: string) => {
+        try {
+            const response = await axios.get(`/api/oAuth_callback?code=${code}`);
+            setUser(response.data.user_info); // Update user info with response data
+            localStorage.setItem("authToken", response.data.token); // Optional if backend sends a token
+        } catch (error) {
+            console.error("OAuth callback failed:", error);
+            throw error;
+        } finally {
+        }
+    };
+
     // Check authentication status on mount
     useEffect(() => {
         const checkAuth = async () => {
             const token = localStorage.getItem("authToken");
             if (!token) {
-                setLoading(false);
                 return;
             }
             try {
@@ -77,7 +92,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 console.error("Failed to fetch user:", error);
                 localStorage.removeItem("authToken");
             } finally {
-                setLoading(false);
             }
         };
         checkAuth();
@@ -88,13 +102,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             value={{
                 user,
                 isAuthenticated: !!user,
-                loading,
                 login,
                 signup,
                 logout,
+                oAuthLogin,
+                handleOAuthCallback,
             }}
         >
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 };

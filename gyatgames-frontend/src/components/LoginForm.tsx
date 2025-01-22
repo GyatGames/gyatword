@@ -12,28 +12,35 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Swal from "sweetalert2";
-
 export function LoginForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-    const { login } = useAuth(); // No need for `any` type now
+    const { login, oAuthLogin } = useAuth(); // No need for `any` type now
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        console.log('calling handlesubmit');
         e.preventDefault();
         console.log('prevented event default');
         setLoading(true);
 
+
         try {
             await login(email, password); // Attempt login
         } catch (err: any) {
+            console.error("Login failed:", err);
+            const errorMessage =
+                err.response?.message ||
+                err.response?.data?.message || // Backend-specific error message
+                "An unexpected error occurred. Please try again.";
+
             // Show SweetAlert2 popup for errors
             Swal.fire({
                 title: "Login Failed",
-                text: err.message || "Failed to login. Please try again.",
+                text: errorMessage,
                 icon: "error",
                 confirmButtonText: "OK",
                 customClass: {
@@ -46,6 +53,8 @@ export function LoginForm({
             });
         } finally {
             setLoading(false);
+            console.log("Loading state reset.");
+
         }
     };
 
@@ -93,7 +102,10 @@ export function LoginForm({
                             <Button type="submit" className="w-full" disabled={loading}>
                                 {loading ? "Logging in..." : "Login"}
                             </Button>
-                            <Button variant="outline" className="w-full">
+                            <Button
+                                onClick={() => oAuthLogin()}
+                                variant="outline"
+                                className="w-full">
                                 Login with Google
                             </Button>
                         </div>

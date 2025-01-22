@@ -17,7 +17,7 @@ export function SignupForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-    const { signup } = useAuth(); // Access the signup function from AuthContext
+    const { signup, oAuthLogin } = useAuth(); // Access the signup function from AuthContext
     const [formValues, setFormValues] = useState({
         username: "",
         email: "",
@@ -144,7 +144,10 @@ export function SignupForm({
                                 >
                                     {loading ? "Signing Up..." : "Sign Up"}
                                 </Button>
-                                <Button variant="outline" className="w-full">
+                                <Button
+                                    onClick={() => oAuthLogin()}
+                                    variant="outline"
+                                    className="w-full">
                                     Sign Up with Google
                                 </Button>
                             </div>
