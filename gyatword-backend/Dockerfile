@@ -16,13 +16,9 @@ RUN bash -o vi
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY main.gyat /app
-
 COPY main.py /app
 
 COPY generator.jar /app
-
-COPY wordlist.txt /app
 
 COPY requirements.txt /app
 
@@ -36,8 +32,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
 
-
-# Run app.py when the container launches
-# CMD ["pygyat", "main.gyat"]
-
-CMD ["pygyat", "main.gyat"]
+# Run main.py when the container launches
+CMD ["python3", "main.py"]

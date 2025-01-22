@@ -8,7 +8,7 @@ export const About = () => {
         <div className="px-6 flex flex-col-reverse md:flex-row gap-8">
           <div className="flex flex-col justify-between">
             <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-              About GyatGames
+              About Gyatword
             </h2>
             <p className="text-md text-justify sm:text-xl text-muted-foreground mt-4 mb-4">
               Gyatword is an engaging daily crossword puzzle game that challenges your knowledge of "brainrot", or gen Alpha, urban slang. Developed collaboratively by a team of four passionate developers in a short span of 24 hours (NUS Hacknroll), Gyatword aims to provide users with an exciting and challenging word game experience.

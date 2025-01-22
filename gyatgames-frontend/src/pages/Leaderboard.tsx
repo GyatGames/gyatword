@@ -1,29 +1,60 @@
 import { LeaderboardTable } from "@/components/LeaderboardTable";
+import { TableCaption } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format } from "date-fns";
+
+const globalLeaderboardData = [
+    { username: "Alice", time: 85 },
+    { username: "Bob", time: 120 },
+    { username: "Charlie", time: 95 },
+    { username: "David", time: 75 },
+    { username: "Eve", time: 110 },
+    { username: "Frank", time: 100 },
+    { username: "Grace", time: 130 },
+    { username: "Hannah", time: 90 },
+    { username: "Ivy", time: 125 },
+    { username: "Jack", time: 105 },
+];
+
+const friendsLeaderboardData = [
+    { username: "Alice", time: 85 },
+    { username: "Bob", time: 120 },
+    { username: "Charlie", time: 95 },
+    { username: "David", time: 75 },
+    { username: "Eve", time: 110 },
+    { username: "Frank", time: 100 },
+    { username: "Grace", time: 130 },
+    { username: "Hannah", time: 90 },
+    { username: "Ivy", time: 125 },
+    { username: "Jack", time: 105 },
+];
 
 export const Leaderboard = () => {
     return (
-        <div className="max-h-screen-minus-57">
-                <h2 className="text-2xl md:text-4xl py-2 px-2 md:px-8 font-bold bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-                    Top 10 Fastest Completion Times
-                </h2>
-            <div className="flex md:px-6 md:mx-6 h-fit border-2">
-                <LeaderboardTable />
-            </div>
-        </ div>
+        <div className="flex max-h-screen-minus-57 md:mt-10 items-start justify-center no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <Tabs defaultValue="global" className="w-full">
+                <div className=" mx-auto flex flex-col items-center justify-center w-[400px]">
+                    <TabsList className="grid grid-cols-2 w-full">
+                        <TabsTrigger value="global">Global Leaderboard</TabsTrigger>
+                        <TabsTrigger value="friends">Friends Leaderboard</TabsTrigger>
+                    </TabsList>
+                    <TableCaption>
+                        Fastest completion times for {format(new Date(), "MMMM dd, yyyy")}.
+                    </TableCaption>
+                </div>
+                <TabsContent value="global">
+                    <div className="flex md:px-6 md:mx-6 h-fit border-2">
+                        <LeaderboardTable data={globalLeaderboardData} />
+                    </div>
+                </TabsContent>
+                <TabsContent value="friends">
+                    <div className="flex md:px-6 md:mx-6 h-fit border-2">
+                        <LeaderboardTable data={friendsLeaderboardData} />
+                    </div>
+                </TabsContent>
 
-        // <section id="about" className="container py-24">
-        //     <div className="bg-muted/50 border rounded-lg py-12">
-        //         <div className="px-6 flex flex-col-reverse md:flex-row gap-8">
-        //             <div className="flex flex-col justify-between">
-        //                 <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-        //                     Leaderboard
-        //                 </h2>
-        //                 {/* <p className="text-xl text-muted-foreground mt-4 mb-4">
-        //                     Coming soon...
-        //                 </p> */}
-        //             </div>
-        //         </div>
-        //     </div>
-        // </section>
+            </Tabs>
+
+        </div>
     );
 };

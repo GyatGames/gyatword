@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { LoginForm } from "@/components/LoginForm";
 import { SignupForm } from "@/components/SignupForm"; // Create a SignupForm component similar to LoginForm
 import {
@@ -8,9 +9,15 @@ import {
 } from "@/components/ui/tabs";
 
 export default function Auth() {
+    const [activeTab, setActiveTab] = useState("login");
+
+    const handleTabChange = (value: string) => {
+        setActiveTab(value);
+    };
+
     return (
-        <div className="flex h-screen-minus-57 mt-10 items-start justify-center no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <Tabs defaultValue="login" className="w-[400px]">
+        <div className="flex max-h-screen-minus-57 md:mt-10 items-start justify-center no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-[400px]">
                 {/* Tab Navigation */}
                 <TabsList className="grid grid-cols-2 w-full">
                     <TabsTrigger value="login">Login</TabsTrigger>

@@ -1,19 +1,63 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import Swal from "sweetalert2";
 export function LoginForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+    const { login, oAuthLogin } = useAuth(); // No need for `any` type now
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        console.log('calling handlesubmit');
+        e.preventDefault();
+        console.log('prevented event default');
+        setLoading(true);
+
+
+        try {
+            await login(email, password); // Attempt login
+        } catch (err: any) {
+            console.error("Login failed:", err);
+            const errorMessage =
+                err.response?.message ||
+                err.response?.data?.message || // Backend-specific error message
+                "An unexpected error occurred. Please try again.";
+
+            // Show SweetAlert2 popup for errors
+            Swal.fire({
+                title: "Login Failed",
+                text: errorMessage,
+                icon: "error",
+                confirmButtonText: "OK",
+                customClass: {
+                    container: 'swal-container',
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    htmlContainer: 'swal-html-container',
+                    confirmButton: 'swal-confirm',
+                },
+            });
+        } finally {
+            setLoading(false);
+            console.log("Loading state reset.");
+
+        }
+    };
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card>
@@ -24,7 +68,7 @@ export function LoginForm({
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
@@ -32,6 +76,8 @@ export function LoginForm({
                                     id="email"
                                     type="email"
                                     placeholder="m@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
                             </div>
@@ -45,15 +91,27 @@ export function LoginForm({
                                         Forgot your password?
                                     </a>
                                 </div>
-                                <Input id="password" type="password" required />
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
                             </div>
-                            <Button type="submit" className="w-full">
-                                Login
+                            <Button type="submit" className="w-full" disabled={loading}>
+                                {loading ? "Logging in..." : "Login"}
+                            </Button>
+                            <Button
+                                onClick={() => oAuthLogin()}
+                                variant="outline"
+                                className="w-full">
+                                Login with Google
                             </Button>
                         </div>
                     </form>
                 </CardContent>
             </Card>
         </div>
-    )
+    );
 }
