@@ -130,13 +130,29 @@ async def login(user: LogInRequest):
         # Check if the authentication was successful
         if not response.session or not response.session.access_token:
             raise HTTPException(status_code=401, detail="Invalid email or password.")
+        
+        # Fetch user profile from Supabase
+        user_id = response.user.id  # Get the user ID from the authentication response
+        profile_response = (
+            supa.table("profiles")
+            .select("username")
+            .eq("id", user_id)
+            .execute()
+        )
 
-        # Return the access token and refresh token
+        if profile_response.error or not profile_response.data:
+            raise HTTPException(status_code=404, detail="User profile not found.")
+
+        # Get the username from the profile
+        username = profile_response.data[0]["username"]
+
+        # Return the access token, refresh token, and username
         return {
             "success": True,
             "message": "Login successful",
             "access_token": response.session.access_token,
-            "refresh_token": response.session.refresh_token
+            "refresh_token": response.session.refresh_token,
+            "username": username
         }
 
     except KeyError as ke:
@@ -144,10 +160,7 @@ async def login(user: LogInRequest):
         raise HTTPException(status_code=500, detail=f"Missing key in response: {str(ke)}")
     except ValueError as ve:
         # Handle unexpected values
-        raise HTTPException(status_code=400, detail=f"Value error: {str(ve)}")
-    except Exception as e:
-        # Catch-all for other exceptions
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
+        raise
 
 @app.get("/getGyatword")
 async def getGyatword():

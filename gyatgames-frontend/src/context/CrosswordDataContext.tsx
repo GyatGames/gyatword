@@ -21,7 +21,7 @@ export const CrosswordDataProvider: React.FC<{ children: React.ReactNode }> = ({
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('https://gyatwordapi.deploy.jensenhshoots.com/getGyatword');
+                const response = await fetch('https://gyatwordapi-test.deploy.jensenhshoots.com/getGyatword');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
