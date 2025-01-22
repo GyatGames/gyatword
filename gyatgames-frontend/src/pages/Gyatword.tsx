@@ -165,6 +165,7 @@ export const Gyatword = () => {
                 ref={crosswordProvider}
                 data={data}
                 onCrosswordComplete={onCrosswordCompleteProvider}
+                useStorage={false}
             >
                 <div className="w-screen h-fit max-h-screen-minus-57 no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     <div className="flex flex-row gap-x-6 items-center mx-auto justify-center py-0.5 md:py-2 bg-background border-b-2">
