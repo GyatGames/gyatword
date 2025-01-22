@@ -24,6 +24,7 @@ export function LoginForm({
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        console.log('prevented event default');
         setLoading(true);
 
         try {
