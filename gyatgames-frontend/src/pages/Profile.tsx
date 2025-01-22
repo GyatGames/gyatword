@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { CgProfile } from "react-icons/cg";
-import {Icon} from 'react-icons-kit';
-import {eyeOff} from 'react-icons-kit/feather/eyeOff';
-import {eye} from 'react-icons-kit/feather/eye'
+import { Icon } from 'react-icons-kit';
+import { eyeOff } from 'react-icons-kit/feather/eyeOff';
+import { eye } from 'react-icons-kit/feather/eye'
 
 
 
@@ -29,14 +29,14 @@ export const Profile = () => {
 
     return (
         <Sheet>
-            
+
             <SheetTrigger className="flex items-center">
                 <Button variant="ghost">
                     <CgProfile className="w-5 h-5" />
                 </Button>
             </SheetTrigger>
 
-            
+
             <SheetContent>
                 {isAuthenticated ? (
                     <SheetHeader>
@@ -57,9 +57,9 @@ export const Profile = () => {
                                                             className="ml-2 text-sm"
                                                         >
                                                             {revealPw ? (
-                                                                <Icon icon={eyeOff}/>
+                                                                <Icon icon={eyeOff} />
                                                             ) : (
-                                                                <Icon icon={eye}/>
+                                                                <Icon icon={eye} />
                                                             )}
                                                         </button>
                                                     </>

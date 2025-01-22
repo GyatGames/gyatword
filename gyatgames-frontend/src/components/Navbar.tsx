@@ -29,22 +29,22 @@ const routeList: RouteProps[] = [
     to: "/gyatword",
     label: "Gyatword",
   },
-  // {
-  //   to: "/leaderboard",
-  //   label: "Leaderboard",
-  // },
+  {
+    to: "/leaderboard",
+    label: "Leaderboard",
+  },
   {
     to: "/about",
     label: "About",
   },
-  // {
-  //   to: "/profile",
-  //   label: "Profile",
-  // }
-  // {
-  //   to: "/auth",
-  //   label: "Auth",
-  // },
+  {
+    to: "/profile",
+    label: "Profile",
+  },
+  {
+    to: "/auth",
+    label: "Auth",
+  },
 ];
 
 export const Navbar = () => {
