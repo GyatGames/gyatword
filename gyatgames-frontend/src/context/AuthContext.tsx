@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Function to handle login
     const login = async (email: string, password: string) => {
         try {
-            const response = await axios.post("https://test-gyatword.deploy.jensenhshoots.com/login", { email, password });
+            const response = await axios.post("https://gyatwordapi-test.deploy.jensenhshoots.com/login", { email, password });
             setUser(response.data.user); // Assuming the backend returns user data
             localStorage.setItem("authToken", response.data.token); // Save token for future requests
         } catch (error) {
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Function to handle signup
     const signup = async (username: string, email: string, password: string) => {
         try {
-            const response = await axios.post("https://test-gyatword.deploy.jensenhshoots.com/signup", { username, email, password });
+            const response = await axios.post("https://gyatwordapi-test.deploy.jensenhshoots.com/signup", { username, email, password });
             setUser(response.data.user); // Assuming the backend returns user data
             localStorage.setItem("authToken", response.data.token); // Save token for future requests
         } catch (error) {
@@ -60,13 +60,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // **OAuth login function**
     const oAuthLogin = () => {
         // Redirect the user to the Google OAuth login page
-        window.location.href = "https://test-gyatword.deploy.jensenhshoots.com/oAuth_login";
+        window.location.href = "https://gyatwordapi-test.deploy.jensenhshoots.com/oAuth_login";
     };
 
     // **Handle OAuth callback function**
     const handleOAuthCallback = async (code: string) => {
         try {
-            const response = await axios.get(`https://test-gyatword.deploy.jensenhshoots.com/oAuth_login?code=${code}`);
+            const response = await axios.get(`https://gyatwordapi-test.deploy.jensenhshoots.com/oAuth_login?code=${code}`);
             setUser(response.data.user_info); // Update user info with response data
             localStorage.setItem("authToken", response.data.token); // Optional if backend sends a token
         } catch (error) {
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 return;
             }
             try {
-                const response = await axios.get("https://test-gyatword.deploy.jensenhshoots.com/me", {
+                const response = await axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/me", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUser(response.data.user); // Assuming the backend returns user data
