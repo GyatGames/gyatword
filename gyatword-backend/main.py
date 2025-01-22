@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta, timezone
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import RedirectResponse
@@ -20,6 +20,7 @@ GOOGLE_OAUTH_CLIENT_ID: str = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 GOOGLE_OAUTH_CLIENT_SECRET: str = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
 GOOGLE_OAUTH_REDIRECT_URI: str = os.getenv("GOOGLE_OAUTH_REDIRECT_URI")
 
+from pydantic import BaseModel, EmailStr
 
 app = FastAPI()
 app.add_middleware(
@@ -41,6 +42,112 @@ USER_INFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 async def root():
     return {"message": "Hello World"}
 
+# Request model
+class SignUpRequest(BaseModel):
+    email: EmailStr
+    password: str
+    username: str
+
+class LogInRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+@app.post("/signup")
+async def signup(user: SignUpRequest):
+    """
+    Handles user signup with email, password, and username.
+    """
+    try:
+        # Validate input
+        if not user.email or not user.password or not user.username:
+            raise HTTPException(status_code=400, detail="Email, password, and username are required.")
+
+        # Create user in Supabase Auth
+        auth_response = supa.auth.sign_up({"email": user.email, "password": user.password})
+
+        # Check for errors in the response
+        if auth_response.user is None:
+            raise HTTPException(
+                status_code=400, 
+                detail=auth_response.error.message if auth_response.error else "Unknown authentication error."
+            )
+
+        user_id = auth_response.user.id  # Accessing user ID correctly
+
+        # Insert the username into the profiles table
+        profile_response = supa.table("profiles").insert({
+            "id": user_id,  # Ensure 'id' matches the primary key in the 'profiles' table
+            "username": user.username,
+            "email": user.email
+        }).execute()
+
+        # Check for errors in profile response
+        if "error" in profile_response and profile_response.error is not None:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Failed to create user profile: {profile_response.error.message}"
+            )
+
+        # Return the JWT token and profile info
+        return {
+            "success": True,
+            "access_token": auth_response.session.access_token,  # Access session correctly
+            "refresh_token": auth_response.session.refresh_token,
+            "user": {
+                "id": user_id,
+                "email": user.email,
+                "username": user.username
+            }
+        }
+
+    except KeyError as ke:
+        # Handle missing keys in the response
+        raise HTTPException(status_code=500, detail=f"Missing key in response: {str(ke)}")
+    except ValueError as ve:
+        # Handle unexpected values
+        raise HTTPException(status_code=400, detail=f"Value error: {str(ve)}")
+    except Exception as e:
+        # Catch-all for other exceptions
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
+
+
+@app.post("/login")
+async def login(user: LogInRequest):
+    """
+    Handles user login with email and password.
+    """
+    try:
+        # Validate input
+        if not user.email or not user.password:
+            raise HTTPException(status_code=400, detail="Email and password are required.")
+
+        # Authenticate user using Supabase
+        response = supa.auth.sign_in_with_password({
+            "email": user.email,
+            "password": user.password
+        })
+
+        # Check if the authentication was successful
+        if not response.session or not response.session.access_token:
+            raise HTTPException(status_code=401, detail="Invalid email or password.")
+
+        # Return the access token and refresh token
+        return {
+            "success": True,
+            "message": "Login successful",
+            "access_token": response.session.access_token,
+            "refresh_token": response.session.refresh_token
+        }
+
+    except KeyError as ke:
+        # Handle missing keys in the response
+        raise HTTPException(status_code=500, detail=f"Missing key in response: {str(ke)}")
+    except ValueError as ve:
+        # Handle unexpected values
+        raise HTTPException(status_code=400, detail=f"Value error: {str(ve)}")
+    except Exception as e:
+        # Catch-all for other exceptions
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
 
 @app.get("/getGyatword")
 async def getGyatword():
@@ -146,6 +253,7 @@ def process_array(grid, words, clues):
     rows = len(grid)
     cols = len(grid[0])
     word_count = 1
+    remove_substrings_in_place(words)
 
     for row in range(rows):
         for col in range(cols):
@@ -180,6 +288,26 @@ def process_array(grid, words, clues):
                 word_count += 1
 
     return crossword
+
+def remove_substrings_in_place(words):
+    """
+    Remove any word in the list that is a substring of another word, modifying the array in-place.
+
+    Args:
+        words (list of str): List of words to process.
+    """
+    # Sort words by length (longest first) to ensure substrings are processed correctly
+    words.sort(key=len, reverse=True)
+
+    # Check and remove substrings
+    i = 0
+    while i < len(words):
+        word = words[i]
+        # Check if the word is a substring of any other word in the list
+        if any(word in other for other in words if word != other):
+            words.pop(i)  # Remove the word if it's a substring
+        else:
+            i += 1  # Move to the next word if it's not a substring
 
 
 if __name__ == "__main__":

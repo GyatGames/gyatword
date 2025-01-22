@@ -75,7 +75,7 @@ export function SignupForm({
             });
         } finally {
             setLoading(false);
-        }
+        } 
     };
 
     return (

@@ -26,7 +26,7 @@ def generateGyatword():
         #get list of words from supabase and save it to a temporary word file
         allwords = fetch_words_from_supabase()
         random.shuffle(allwords)
-        wordlist = allwords[0:40]
+        wordlist = allwords[0:40]  
         with open("temp_wordlist.txt", "w") as f:
             f.write("\n".join(wordlist))
 
