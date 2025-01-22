@@ -152,7 +152,6 @@ async def login(user: LogInRequest):
             "message": "Login successful",
             "access_token": response.session.access_token,
             "refresh_token": response.session.refresh_token,
-            "username": username
         }
 
     except KeyError as ke:
@@ -189,7 +188,33 @@ async def getGyatword():
         ).execute()
 
         return result  # json.dumps(result, indent=2)
+    
+@app.get("/getStreaks")
+async def getStreaks(userID: str):  # Explicitly declare `userID` as a query parameter
+    """
+    Retrieve streak information for a given userID.
+    """
+    try:
+        response = (
+            supa.table("streaks")
+            .select("*")
+            .eq("id", userID)
+            .execute()
+        )
 
+        if response.data:
+            # Return max and current streaks
+            return {
+                "max_streak": response.data[0]["max_streak"],
+                "current_streak": response.data[0]["current_streak"]
+            }
+        else:
+            # Handle the case where no data is found
+            raise HTTPException(status_code=404, detail="Streaks not found for the given user ID.")
+
+    except Exception as e:
+        # General error handling
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
 
 @app.get("/oAuth_login")
 def oAuth_login():
