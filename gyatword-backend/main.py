@@ -176,28 +176,28 @@ async def login(user: LogInRequest):
                 
         
         
-        # Fetch user profile from Supabase
-        user_id = response.user.id  # Get the user ID from the authentication response
-        profile_response = (
-            supa.table("profiles")
-            .select("username")
-            .eq("id", user_id)
-            .execute()
-        )
+        # # Fetch user profile from Supabase
+        # user_id = response.user.id  # Get the user ID from the authentication response
+        # profile_response = (
+        #     supa.table("profiles")
+        #     .select("username")
+        #     .eq("id", user_id)
+        #     .execute()
+        # )
 
 
-        if profile_response.error:
-            print(f"Supabase profile query error: {profile_response.error}")
-            raise HTTPException(status_code=500, detail="Error fetching user profile.")
+        # if profile_response.error:
+        #     print(f"Supabase profile query error: {profile_response.error}")
+        #     raise HTTPException(status_code=500, detail="Error fetching user profile.")
             
-        if not profile_response.data or len(profile_response.data) == 0:
-            raise HTTPException(status_code=404, detail="User profile not found.")
+        # if not profile_response.data or len(profile_response.data) == 0:
+        #     raise HTTPException(status_code=404, detail="User profile not found.")
 
-        if profile_response.error or not profile_response.data:
-            raise HTTPException(status_code=404, detail="User profile not found.")
+        # if profile_response.error or not profile_response.data:
+        #     raise HTTPException(status_code=404, detail="User profile not found.")
 
-        # Get the username from the profile
-        username = profile_response.data[0]["username"]
+        # # Get the username from the profile
+        # username = profile_response.data[0]["username"]
 
         # Return the access token, refresh token, and username
         return {
