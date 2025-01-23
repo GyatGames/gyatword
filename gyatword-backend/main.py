@@ -9,6 +9,10 @@ from dotenv import load_dotenv
 from client import supa
 import requests
 import uvicorn
+from starlette.requests import Request
+
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 
 
 load_dotenv()
@@ -37,6 +41,38 @@ AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 USER_INFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 
+
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+
+# Custom HTTP exception handler
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers={
+            "Access-Control-Allow-Origin": "*",  # Add your frontend origin
+            "Access-Control-Allow-Credentials": "true",
+        },
+    )
+
+
+@app.exception_handler(Exception)
+async def generic_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error"},
+        headers={"Access-Control-Allow-Origin": "*"},
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=400,
+        content={"detail": str(exc)},
+        headers={"Access-Control-Allow-Origin": "*"},
+    )
 
 @app.get("/")
 async def root():
@@ -126,10 +162,19 @@ async def login(user: LogInRequest):
             "email": user.email,
             "password": user.password
         })
+        # Check if the response contains the expected session and user
+        if not response or not response.session or not response.session.access_token:
+            raise HTTPException(status_code=401, detail="Invalid email or password.")
+
+        # Check if the user object exists
+        if not response.user or not response.user.id:
+            raise HTTPException(status_code=500, detail="Failed to retrieve user details.")
 
         # Check if the authentication was successful
         if not response.session or not response.session.access_token:
             raise HTTPException(status_code=401, detail="Invalid email or password.")
+                
+        
         
         # Fetch user profile from Supabase
         user_id = response.user.id  # Get the user ID from the authentication response
@@ -139,6 +184,14 @@ async def login(user: LogInRequest):
             .eq("id", user_id)
             .execute()
         )
+
+
+        if profile_response.error:
+            print(f"Supabase profile query error: {profile_response.error}")
+            raise HTTPException(status_code=500, detail="Error fetching user profile.")
+            
+        if not profile_response.data or len(profile_response.data) == 0:
+            raise HTTPException(status_code=404, detail="User profile not found.")
 
         if profile_response.error or not profile_response.data:
             raise HTTPException(status_code=404, detail="User profile not found.")
@@ -351,3 +404,5 @@ def remove_substrings_in_place(words):
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
+
