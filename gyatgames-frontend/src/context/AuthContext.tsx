@@ -28,8 +28,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const login = async (email: string, password: string) => {
         try {
             const response = await axios.post("https://gyatwordapi-test.deploy.jensenhshoots.com/login", { email, password });
-            setUser(response.data.user); // Assuming the backend returns user data
-            localStorage.setItem("authToken", response.data.token); // Save token for future requests
+            console.log("Login response:", response.data); // Debugging
+
+            const { access_token, refresh_token, username } = response.data;
+
+            if (!access_token) {
+                throw new Error("Access token is missing in the response");
+            }
+
+            // Store tokens
+            localStorage.setItem("authToken", access_token);
+            if (refresh_token) {
+                localStorage.setItem("refreshToken", refresh_token);
+            }
+
+            // Decode the access token if needed to extract user details
+            const decodedToken = JSON.parse(atob(access_token.split(".")[1]));
+            console.log("Decoded Token:", decodedToken);
+
+            const user = {
+                email: decodedToken.email,
+                id: decodedToken.sub, // Or other user-specific data
+                username: username
+            };
+
+            setUser(user); // Set user in context
         } catch (error) {
             console.error("Login failed:", error);
             throw error; // Rethrow error for the UI to handle

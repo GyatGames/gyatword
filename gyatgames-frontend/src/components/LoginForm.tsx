@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
 export function LoginForm({
     className,
     ...props
@@ -20,6 +22,7 @@ export function LoginForm({
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         console.log('calling handlesubmit');
@@ -30,6 +33,9 @@ export function LoginForm({
 
         try {
             await login(email, password); // Attempt login
+            console.log("Login successful! Redirecting to home page...");
+            navigate("/");
+
         } catch (err: any) {
             console.error("Login failed:", err);
             const errorMessage =
