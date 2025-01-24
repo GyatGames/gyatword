@@ -415,6 +415,9 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
         # Decode the JWT token
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
 
+        print(f"Decoded token payload: {payload}")
+
+
         # Extract user_id from the payload
         user_id = payload.get("sub")
         if not user_id:
@@ -445,7 +448,9 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
             email=user_data["email"]
         )
 
-    except JWTError:
+    except JWTError as e:
+        print(f"Token decoding error: {e}")
+
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     
 
