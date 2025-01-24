@@ -177,27 +177,24 @@ async def login(user: LogInRequest):
         
         
         # # Fetch user profile from Supabase
-        # user_id = response.user.id  # Get the user ID from the authentication response
-        # profile_response = (
-        #     supa.table("profiles")
-        #     .select("username")
-        #     .eq("id", user_id)
-        #     .execute()
-        # )
+        user_id = response.user.id  # Get the user ID from the authentication response
+        profile_response = (
+            supa.table("profiles")
+            .select("username")
+            .eq("id", user_id)
+            .execute()
+        )
+        # Check for errors in the profile query
+        if hasattr(profile_response, "error") and profile_response.error:
+            print(f"Supabase profile query error: {profile_response.error}")
+            raise HTTPException(status_code=500, detail="Error fetching user profile.")
 
+        # Ensure data exists in the profile response
+        if not hasattr(profile_response, "data") or not profile_response.data:
+            raise HTTPException(status_code=404, detail="User profile not found.")
 
-        # if profile_response.error:
-        #     print(f"Supabase profile query error: {profile_response.error}")
-        #     raise HTTPException(status_code=500, detail="Error fetching user profile.")
-            
-        # if not profile_response.data or len(profile_response.data) == 0:
-        #     raise HTTPException(status_code=404, detail="User profile not found.")
-
-        # if profile_response.error or not profile_response.data:
-        #     raise HTTPException(status_code=404, detail="User profile not found.")
-
-        # # Get the username from the profile
-        # username = profile_response.data[0]["username"]
+        # Get the username from the profile response
+        username = profile_response.data[0]["username"]
 
         # Return the access token, refresh token, and username
         return {
@@ -205,6 +202,7 @@ async def login(user: LogInRequest):
             "message": "Login successful",
             "access_token": response.session.access_token,
             "refresh_token": response.session.refresh_token,
+            "username": username
         }
 
     except KeyError as ke:
@@ -254,6 +252,15 @@ async def getStreaks(userID: str):  # Explicitly declare `userID` as a query par
             .eq("id", userID)
             .execute()
         )
+
+              # Check for errors in the profile query
+        if hasattr(response, "error") and response.error:
+            print(f"Supabase profile query error: {response.error}")
+            raise HTTPException(status_code=500, detail="Error fetching user profile.")
+
+        # Ensure data exists in the profile response
+        if not hasattr(response, "data") or not response.data:
+            raise HTTPException(status_code=404, detail="User profile not found.")
 
         if response.data:
             # Return max and current streaks
