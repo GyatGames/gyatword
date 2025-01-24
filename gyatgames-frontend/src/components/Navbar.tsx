@@ -89,7 +89,7 @@ export const Navbar = () => {
                   ))}
 
                   <a
-                    href="https://github.com/leoMirandaa/shadcn-landing-page.git"
+                    href="https://github.com/GyatGames/gyatword"
                     target="_blank"
                     rel="noreferrer noopener"
                     className={`w-[110px] border ${buttonVariants({

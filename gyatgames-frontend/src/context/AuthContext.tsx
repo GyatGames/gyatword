@@ -99,6 +99,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = () => {
         setUser(null);
         localStorage.removeItem("authToken");
+        localStorage.removeItem("refreshToken"); // Remove the refresh token
+        console.log("User logged out, tokens cleared.");
+
+
     };
 
 
@@ -130,6 +134,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 try {
                     const user = await refreshAccessToken(refreshToken);
                     setUser(user);
+                    console.log("set user through refresh token");
                 } catch (error) {
                     console.error("Failed to refresh token:", error);
                     localStorage.removeItem("refreshToken");
@@ -139,7 +144,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     const response = await axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/me", {
                         headers: { Authorization: `Bearer ${token}` },
                     });
-                    setUser(response.data.user);
+
+                    console.log("Response from /me:", response.data); // Log to ensure correctness
+
+                    setUser(response.data);
+                    console.log("set user through auth token: " + response.data);
+
                 } catch (error) {
                     console.error("Failed to fetch user:", error);
                     localStorage.removeItem("authToken");

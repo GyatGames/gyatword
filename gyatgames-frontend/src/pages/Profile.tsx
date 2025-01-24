@@ -6,29 +6,25 @@ import { CgProfile } from "react-icons/cg";
 import { Icon } from 'react-icons-kit';
 import { eyeOff } from 'react-icons-kit/feather/eyeOff';
 import { eye } from 'react-icons-kit/feather/eye'
+import { useAuth } from "@/context/AuthContext";
 
 
 
 
 export const Profile = () => {
+    const [isOpen, setIsOpen] = useState<boolean>(false);
 
-    // const { isAuthenticated } = useAuth();
-
-
-
-
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const { isAuthenticated, user, logout } = useAuth();
     const [revealPw, setRevealPw] = useState(false);
 
     const userData = {
-        user: "Aayush",
-        email: "mario@gmail.com",
-        password: "P@ssword",
-        date: new Date().toLocaleDateString()
+        user: user?.username || "Guest",
+        email: user?.email || "Unknown",
+        date: new Date().toLocaleDateString(),
     };
 
     return (
-        <Sheet>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
 
             <SheetTrigger className="flex items-center">
                 <Button variant="ghost">
@@ -79,7 +75,7 @@ export const Profile = () => {
                                         Friends
                                     </Button>
                                 </Link>
-                                <Link to="/" onClick={() => setIsAuthenticated(false)}>
+                                <Link to="/" onClick={logout}>
                                     <Button variant="outline" className="w-full">
                                         Logout
                                     </Button>
@@ -92,7 +88,10 @@ export const Profile = () => {
                         <SheetTitle className="md:text-2xl pb-2">You aren't logged in</SheetTitle>
                         <SheetDescription>
                             <hr className="my-2" />
-                            <Link to="/auth" onClick={() => setIsAuthenticated(true)}>
+                            <Link
+                                to="/auth"
+                                onClick={() => setIsOpen(false)}
+                            >
                                 <Button variant="outline" className="w-full">
                                     Login
                                 </Button>
