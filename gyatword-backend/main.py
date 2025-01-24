@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timedelta, timezone
-from fastapi import FastAPI, HTTPException, HTTPException, Depends
+from typing import Optional
+from fastapi import FastAPI, HTTPException, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import RedirectResponse
@@ -12,6 +13,8 @@ import uvicorn
 from starlette.requests import Request
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from jose import jwt, JWTError
+
 
 
 
@@ -23,6 +26,8 @@ SUPABASE_KEY: str = os.getenv("SUPABASE_KEY")
 GOOGLE_OAUTH_CLIENT_ID: str = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 GOOGLE_OAUTH_CLIENT_SECRET: str = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
 GOOGLE_OAUTH_REDIRECT_URI: str = os.getenv("GOOGLE_OAUTH_REDIRECT_URI")
+JWT_SECRET = os.getenv("JWT_SECRET")
+JWT_ALGORITHM = "HS256"
 
 from pydantic import BaseModel, EmailStr
 
@@ -87,6 +92,12 @@ class SignUpRequest(BaseModel):
 class LogInRequest(BaseModel):
     email: EmailStr
     password: str
+
+    # Pydantic model for response
+class User(BaseModel):
+    id: str
+    username: str
+    email: str
 
 @app.post("/signup")
 async def signup(user: SignUpRequest):
@@ -387,6 +398,55 @@ def process_array(grid, words, clues):
                 word_count += 1
 
     return crossword
+
+
+@app.get("/me", response_model=User)
+async def get_current_user(authorization: Optional[str] = Header(None)):
+    """
+    Verify the JWT token issued by Supabase and fetch the user profile.
+    """
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header is missing")
+
+    try:
+        # Extract the token from the Authorization header
+        token = authorization.split(" ")[1]
+
+        # Decode the JWT token
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+
+        # Extract user_id from the payload
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token payload")
+
+        # Fetch user profile from the Supabase `profiles` table
+        profile_response = (
+            supa.table("profiles")
+            .select("id, username, email")
+            .eq("id", user_id)
+            .execute()
+        )
+
+        # Check for errors in the profile query
+        if hasattr(profile_response, "error") and profile_response.error:
+            print(f"Supabase profile query error: {profile_response.error}")
+            raise HTTPException(status_code=500, detail="Error fetching user profile.")
+
+        # Ensure data exists in the profile response
+        if not hasattr(profile_response, "data") or not profile_response.data:
+            raise HTTPException(status_code=404, detail="User profile not found.")
+
+        # Return the user profile
+        user_data = profile_response.data[0]
+        return User(
+            id=user_data["id"],
+            username=user_data["username"],
+            email=user_data["email"]
+        )
+
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 def remove_substrings_in_place(words):
     """

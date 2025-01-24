@@ -7,3 +7,4 @@ requests==2.32.3
 pydantic[email]==2.10.5
 email-validator
 starlette
+jose
