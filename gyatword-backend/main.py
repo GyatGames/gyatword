@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-from fastapi import FastAPI, HTTPException, HTTPException, Depends, Header
+from fastapi import FastAPI, HTTPException, HTTPException, Depends, Header, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import RedirectResponse
@@ -447,6 +447,42 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
 
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+
+@app.post("/refresh")
+async def refresh_token(refresh_token: str = Body(...)):
+    """
+    Refresh access token using the provided refresh token.
+    """
+    try:
+        # Verify the refresh token
+        payload = jwt.decode(refresh_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user_id = payload.get("sub")
+
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid refresh token.")
+
+        # Generate a new access token
+        access_token = jwt.encode(
+            {"sub": user_id, "exp": datetime.utcnow() + timedelta(minutes=15)},
+            JWT_SECRET,
+            algorithm=JWT_ALGORITHM,
+        )
+
+        # Optionally: Generate a new refresh token (rotate)
+        new_refresh_token = jwt.encode(
+            {"sub": user_id, "exp": datetime.utcnow() + timedelta(days=30)},
+            JWT_SECRET,
+            algorithm=JWT_ALGORITHM,
+        )
+
+        return {
+            "access_token": access_token,
+            "refresh_token": new_refresh_token,
+            "user": {"id": user_id},  # Include other user details if needed
+        }
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token.")
 
 def remove_substrings_in_place(words):
     """

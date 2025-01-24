@@ -24,6 +24,28 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
 
+    const refreshAccessToken = async (refreshToken: string) => {
+        try {
+            const response = await axios.post("https://your-backend.com/refresh", {
+                refresh_token: refreshToken,
+            });
+    
+            const { access_token, refresh_token, user } = response.data;
+    
+            // Save the new tokens to localStorage
+            localStorage.setItem("authToken", access_token);
+            if (refresh_token) {
+                localStorage.setItem("refreshToken", refresh_token);
+            }
+    
+            // Return the new user data
+            return user;
+        } catch (error) {
+            console.error("Failed to refresh access token:", error);
+            throw error;
+        }
+    };
+
     // Function to handle login
     const login = async (email: string, password: string) => {
         try {
@@ -99,24 +121,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Check authentication status on mount
     useEffect(() => {
         const checkAuth = async () => {
             const token = localStorage.getItem("authToken");
-            if (!token) {
-                return;
-            }
-            try {
-                const response = await axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/me", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setUser(response.data.user); // Assuming the backend returns user data
-            } catch (error) {
-                console.error("Failed to fetch user:", error);
-                localStorage.removeItem("authToken");
-            } finally {
+            const refreshToken = localStorage.getItem("refreshToken");
+    
+            if (!token && refreshToken) {
+                try {
+                    const user = await refreshAccessToken(refreshToken);
+                    setUser(user);
+                } catch (error) {
+                    console.error("Failed to refresh token:", error);
+                    localStorage.removeItem("refreshToken");
+                }
+            } else if (token) {
+                try {
+                    const response = await axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/me", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    setUser(response.data.user);
+                } catch (error) {
+                    console.error("Failed to fetch user:", error);
+                    localStorage.removeItem("authToken");
+                }
             }
         };
+    
         checkAuth();
     }, []);
 
