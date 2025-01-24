@@ -413,7 +413,7 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
         token = authorization.split(" ")[1]
 
         # Decode the JWT token
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM], audience="authenticated")
 
         print(f"Decoded token payload: {payload}")
 
