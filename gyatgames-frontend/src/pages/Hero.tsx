@@ -1,4 +1,4 @@
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { HeroCards } from "@/components/HeroCards";
 import {
@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/alert"
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export const Hero = () => {
   const { isAuthenticated, user } = useAuth(); // Access the authentication state
@@ -26,8 +27,8 @@ export const Hero = () => {
       {showAlert && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
           <Alert variant="default">
-          <AlertTitle>Welcome back, {user?.username}!</AlertTitle>
-          <AlertDescription>
+            <AlertTitle>Welcome back, {user?.username}!</AlertTitle>
+            <AlertDescription>
               You are logged in. Enjoy exploring the crossword brainrot!
             </AlertDescription>
           </Alert>
@@ -56,14 +57,13 @@ export const Hero = () => {
           </p>
 
           <div className="space-y-4 md:space-y-0 md:space-x-4">
-            <a
-              href="/gyatword"
-              className={`w-full md:w-1/3 ${buttonVariants({
-                variant: "default",
-              })}`}
+            <Link
+              to="/gyatword"
             >
-              Play Gyatword
-            </a>
+              <Button variant="default" className="w-full md:w-1/3">
+                Play Gyatword
+              </Button>
+            </Link>
             <a
               rel="noreferrer noopener"
               href="https://github.com/GyatGames/gyatword"
