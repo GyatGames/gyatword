@@ -37,14 +37,14 @@ const routeList: RouteProps[] = [
     to: "/about",
     label: "About",
   },
-  {
-    to: "/profile",
-    label: "Profile",
-  },
-  {
-    to: "/auth",
-    label: "Auth",
-  },
+  // {
+  //   to: "/profile",
+  //   label: "Profile",
+  // },
+  // {
+  //   to: "/auth",
+  //   label: "Auth",
+  // },
 ];
 
 export const Navbar = () => {
@@ -63,11 +63,13 @@ export const Navbar = () => {
           </NavigationMenuItem>
 
           {/* Mobile */}
-          <span className="flex md:hidden justify-between gap-2">
+          <span className="flex md:hidden justify-between">
             <ModeToggle />
+            <Profile />
+
 
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger className="pr-2">
+              <SheetTrigger className="px-2">
                 <Menu className="flex md:hidden h-5 w-5" />
               </SheetTrigger>
 
@@ -101,7 +103,6 @@ export const Navbar = () => {
                   </a>
                 </nav>
               </SheetContent>
-              <Profile />
             </Sheet>
 
 

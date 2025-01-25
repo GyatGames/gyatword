@@ -25,7 +25,7 @@ export const Hero = () => {
       {/* Overlay Alert */}
       {showAlert && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
-          <Alert>
+          <Alert variant="default">
           <AlertTitle>Welcome back, {user?.username}!</AlertTitle>
           <AlertDescription>
               You are logged in. Enjoy exploring the crossword brainrot!

@@ -27,7 +27,7 @@ export const Profile = () => {
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
 
             <SheetTrigger className="flex items-center">
-                <Button variant="ghost">
+                <Button variant="ghost" className="p-3">
                     <CgProfile className="w-5 h-5" />
                 </Button>
             </SheetTrigger>
