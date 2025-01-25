@@ -49,6 +49,13 @@ export function SignupForm({
                 text: "Passwords do not match.",
                 icon: "error",
                 confirmButtonText: "OK",
+                customClass: {
+                    container: 'swal-container',
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    htmlContainer: 'swal-html-container',
+                    confirmButton: 'swal-confirm',
+                },
             });
             return;
         }
@@ -61,6 +68,13 @@ export function SignupForm({
                 text: "Your account has been created successfully!",
                 icon: "success",
                 confirmButtonText: "OK",
+                customClass: {
+                    container: 'swal-container',
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    htmlContainer: 'swal-html-container',
+                    confirmButton: 'swal-confirm',
+                },
             });
         } catch (err: any) {
             const errorMessage =
@@ -72,6 +86,13 @@ export function SignupForm({
                 text: errorMessage,
                 icon: "error",
                 confirmButtonText: "OK",
+                customClass: {
+                    container: 'swal-container',
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    htmlContainer: 'swal-html-container',
+                    confirmButton: 'swal-confirm',
+                },
             });
         } finally {
             setLoading(false);

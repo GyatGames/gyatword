@@ -76,7 +76,7 @@ export const Profile = () => {
                                     </Button>
                                 </Link>
                                 <Link to="/" onClick={logout}>
-                                    <Button variant="outline" className="w-full">
+                                    <Button variant="destructive" className="w-full">
                                         Logout
                                     </Button>
                                 </Link>
@@ -92,7 +92,7 @@ export const Profile = () => {
                                 to="/auth"
                                 onClick={() => setIsOpen(false)}
                             >
-                                <Button variant="outline" className="w-full">
+                                <Button variant="default" className="w-full">
                                     Login
                                 </Button>
                             </Link>
