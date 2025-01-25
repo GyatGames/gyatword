@@ -110,7 +110,7 @@ export const Navbar = () => {
           </span>
 
           {/* Desktop */}
-          <nav className="hidden md:flex gap-2">
+          <nav className="hidden md:flex gap-2 pl-[95px]">
             {routeList.map(({ to, label }: RouteProps, i) => (
               <Link
                 key={i}
