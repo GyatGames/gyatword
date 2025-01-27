@@ -22,7 +22,7 @@ This project was initially split into two repositories before being merged into 
 
 ## Try it out
 
-Visit the website at [www.gyatword.com](https://gyatword.com)
+Visit the website at [gyatword.com](https://gyatword.com)
 
 ---
 
