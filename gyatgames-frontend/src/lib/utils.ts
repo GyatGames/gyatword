@@ -64,7 +64,7 @@ export { lightTheme, darkTheme };
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Submit a new timing for the leaderboard
-export async function submitTiming(userId: string, timing: string) {
+export async function submitTiming(userId: string, timing: number) {
   try {
     const response = await fetch(`${API_BASE_URL}/submit_timing`, {
       method: "POST",
@@ -106,7 +106,7 @@ export async function fetchFriendsLeaderboard() {
     const response = await fetch(`${API_BASE_URL}/friendsLeaderboard`);
     const data = await response.json();
     console.log("Friends Leaderboard:", data);
-    
+
     // Ensure data is an array before returning
     if (!Array.isArray(data) || data.length === 0) {
       console.warn("No leaderboard data available.");

@@ -127,7 +127,7 @@ export const Gyatword = () => {
                     // ✅ Submit timing only if the user is logged in
                     if (isAuthenticated && user) {
                         try {
-                            await submitTiming(user.id, timeString);
+                            await submitTiming(user.id, totalSeconds);
                             console.log("✅ Timing submitted successfully!");
                         } catch (error) {
                             console.error("❌ Failed to submit timing:", error);

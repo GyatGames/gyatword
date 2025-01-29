@@ -568,56 +568,63 @@ async def refresh_token(refresh_token: str = Body(...)):
 
 class TimingSubmission(BaseModel):
     user_id: str
-    timing: str  # Ensure this is correctly formatted as 'HH:MM:SS'
+    timing: int  # Ensure this is correctly formatted as 'HH:MM:SS'
 
 @app.post("/submit_timing")
-async def submit_timing(data: TimingSubmission):
+def submit_timing(data: TimingSubmission):
+    """ Endpoint to submit a crossword completion time in seconds """
+
     try:
-        print("Received timing submission:", data)  # ✅ Debug log
+        today = datetime.utcnow().date()
 
-        # Convert `timing` string to INTERVAL format (PostgreSQL)
-        try:
-            hours, minutes, seconds = map(int, data.timing.split(":"))
-            timing_interval = timedelta(hours=hours, minutes=minutes, seconds=seconds)
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid timing format. Expected HH:MM:SS.")
-
-        today = datetime.utcnow().date()  # Get today's date
-
-        # Insert into Supabase
-        response = supa.table("timings").insert({
+        # ✅ Insert or update timing in Supabase
+        response = supa.table("timings").upsert({
             "user_id": data.user_id,
-            "timing": str(timing_interval),  # Convert timedelta to string
             "date": today,
+            "timing": data.timing
         }).execute()
 
-        return {"message": "Timing submitted successfully!", "response": response}
+        if response.error:
+            raise HTTPException(status_code=500, detail="Failed to insert timing.")
+
+        return {"success": True, "message": "Timing submitted successfully!"}
 
     except Exception as e:
-        print("Error submitting timing:", str(e))
-        raise HTTPException(status_code=500, detail=f"Failed to submit timing: {str(e)}")
+        print(f"Error submitting timing: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
-# 🚀 Get Daily Leaderboard Endpoint
-@app.get("/globalLeaderboard")
-def get_daily_leaderboard():
-    """
-    Fetches the top 10 fastest crossword completion times for today.
-    """
-    today = date.today().isoformat()
+@app.get("/leaderboard")
+def get_leaderboard():
+    """ Fetch the top 10 fastest completion times for today """
 
-    query = (
+    today = datetime.utcnow().date()
+    
+    response = (
         supa.table("timings")
-        .select("timing, profiles(username)")
+        .select("user_id, timing")
         .eq("date", today)
-        .order("timing", asc=True)
+        .order("timing", asc=True)  # ✅ Sorting in ascending order (fastest first)
         .limit(10)
         .execute()
     )
 
-    if query.error:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch leaderboard: {query.error.message}")
+    if response.error:
+        raise HTTPException(status_code=500, detail="Failed to fetch leaderboard.")
 
-    return query.data
+    leaderboard_data = response.data
+
+    # Fetch usernames for each user_id
+    for entry in leaderboard_data:
+        user_response = (
+            supa.table("profiles")
+            .select("username")
+            .eq("id", entry["user_id"])
+            .single()
+            .execute()
+        )
+        entry["username"] = user_response.data["username"] if user_response.data else "Unknown"
+
+    return leaderboard_data
 
 def remove_substrings_in_place(words):
     """
