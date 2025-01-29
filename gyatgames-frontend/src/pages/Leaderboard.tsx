@@ -18,6 +18,7 @@ export const Leaderboard = () => {
         async function loadLeaderboard() {
             try {
                 const globalLeaderboardData = await fetchGlobalLeaderboard();
+                console.log(globalLeaderboardData);
                 setGlobalLeaderboardData(globalLeaderboardData);
                 const friendsLeaderboardData = await fetchFriendsLeaderboard();
                 setFriendsLeaderboardData(friendsLeaderboardData);

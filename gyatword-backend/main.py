@@ -624,9 +624,9 @@ def get_global_leaderboard():
     
     response = (
         supa.table("timings")
-        .select("user_id, timing")
+        .select("user_id, time")
         .eq("date", today)
-        .order("timing", desc=False)  # ✅ FIXED: Use "desc=False" for ascending order
+        .order("time", desc=False)  # ✅ FIXED: Use "desc=False" for ascending order
         .limit(10)  # ✅ Get top 10
         .execute()
     )

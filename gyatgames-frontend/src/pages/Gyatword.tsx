@@ -130,7 +130,7 @@ export const Gyatword = () => {
                             await submitTiming(user.id, totalSeconds);
                             console.log("✅ Timing submitted successfully!");
                         } catch (error) {
-                            console.error("❌ Failed to submit timing:", error);
+                            console.error("❌ Failed to submit time:", error);
                         }
                     } else {
                         console.log("⚠️ User is not logged in, skipping timing submission.");
