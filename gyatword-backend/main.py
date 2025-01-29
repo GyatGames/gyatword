@@ -593,8 +593,8 @@ def submit_timing(data: TimingSubmission):
         print(f"Error submitting timing: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-@app.get("/leaderboard")
-def get_leaderboard():
+@app.get("/globalLeaderboard")
+def get_global_leaderboard():
     """ Fetch the top 10 fastest completion times for today """
 
     today = datetime.utcnow().date()
