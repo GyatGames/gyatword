@@ -8,18 +8,14 @@ function AuthCallback() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("Raw query string:", window.location.search); // ✅ Debug query string
         const params = new URLSearchParams(window.location.search);
         const accessToken = params.get("access_token");
         const refreshToken = params.get("refresh_token");
-        console.log("accesstoken 1: " + accessToken)
 
         if (accessToken) {
             // Store tokens
-            console.log("accesstoken 2: " + accessToken)
             localStorage.setItem("OauthToken", accessToken);
             localStorage.setItem("key", "value");
-            console.log("stored access token");
             if (refreshToken) {
                 localStorage.setItem("refreshToken", refreshToken);
             }

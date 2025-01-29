@@ -326,7 +326,6 @@ def oAuth_login():
     redirect_url = f"{AUTH_URL}?{requests.compat.urlencode(query_params)}"
     return RedirectResponse(redirect_url)
 
-from fastapi.responses import RedirectResponse
 
 @app.get("/oAuth_callback")
 def oAuth_callback(code: str):
