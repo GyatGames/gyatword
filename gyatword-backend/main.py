@@ -1,9 +1,9 @@
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Depends, Header, Body
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer
 from fastapi.responses import RedirectResponse
 from generateGyatword import *
 from dotenv import load_dotenv
@@ -28,6 +28,7 @@ GOOGLE_OAUTH_CLIENT_SECRET: str = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
 GOOGLE_OAUTH_REDIRECT_URI: str = os.getenv("GOOGLE_OAUTH_REDIRECT_URI")
 JWT_SECRET = os.getenv("JWT_SECRET")
 JWT_ALGORITHM = "HS256"
+FRONTEND_REDIRECT_URL = os.getenv("FRONTEND_REDIRECT_URL")
 
 from pydantic import BaseModel, EmailStr
 
@@ -384,17 +385,13 @@ def oAuth_callback(code: str):
         print(response)
 
     # Redirect the user back to the frontend with tokens
-    frontend_redirect_url = f"https://test-gyatword.deploy.jensenhshoots.com/auth/callback"
+    frontend_redirect_url = FRONTEND_REDIRECT_URL
     query_params = {
         "access_token": access_token,
         "refresh_token": refresh_token if refresh_token else "",
     }
     redirect_url = f"{frontend_redirect_url}?{requests.compat.urlencode(query_params)}"
     return RedirectResponse(redirect_url)
-
-import requests
-from fastapi import Depends, HTTPException
-from fastapi.security import HTTPBearer
 
 security = HTTPBearer()
 
@@ -568,6 +565,62 @@ async def refresh_token(refresh_token: str = Body(...)):
         }
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token.")
+    
+
+# 🚀 Insert Timing Endpoint
+@app.post("/submit_timing")
+def submit_timing(user_id: str, timing: str):
+    """
+    Inserts or updates a user's crossword completion time for today.
+    """
+    today = date.today().isoformat()  # Format: YYYY-MM-DD
+
+    # Check if user exists in profiles table
+    user_query = supa.table("profiles").select("id").eq("id", user_id).execute()
+
+    if user_query.error or not user_query.data:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Insert or update timing
+    query = (
+        supa.table("timings")
+        .upsert(
+            {
+                "user_id": user_id,
+                "date": today,
+                "timing": timing,  # String format: "00:03:25"
+            },
+            on_conflict=["user_id", "date"]
+        )
+        .execute()
+    )
+
+    if query.error:
+        raise HTTPException(status_code=500, detail=f"Failed to submit timing: {query.error.message}")
+
+    return {"success": True, "message": "Timing recorded successfully!"}
+
+# 🚀 Get Daily Leaderboard Endpoint
+@app.get("/leaderboard")
+def get_daily_leaderboard():
+    """
+    Fetches the top 10 fastest crossword completion times for today.
+    """
+    today = date.today().isoformat()
+
+    query = (
+        supa.table("timings")
+        .select("timing, profiles(username)")
+        .eq("date", today)
+        .order("timing", asc=True)
+        .limit(10)
+        .execute()
+    )
+
+    if query.error:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch leaderboard: {query.error.message}")
+
+    return query.data
 
 def remove_substrings_in_place(words):
     """
