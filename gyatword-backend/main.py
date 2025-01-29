@@ -565,31 +565,37 @@ async def refresh_token(refresh_token: str = Body(...)):
         }
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token.")
-    
+
+class TimingSubmission(BaseModel):
+    user_id: str
+    timing: str  # Ensure this is correctly formatted as 'HH:MM:SS'
+
 @app.post("/submit_timing")
-def submit_timing(user_id: str, timing: str):
-    """
-    Inserts or updates a user's crossword completion time for today.
-    """
-    today = date.today().isoformat()
+async def submit_timing(data: TimingSubmission):
+    try:
+        print("Received timing submission:", data)  # ✅ Debug log
 
-    query = (
-        supa.table("timings")
-        .upsert(
-            {
-                "user_id": user_id,
-                "date": today,
-                "timing": timing,
-            },
-            on_conflict=["user_id", "date"]
-        )
-        .execute()
-    )
+        # Convert `timing` string to INTERVAL format (PostgreSQL)
+        try:
+            hours, minutes, seconds = map(int, data.timing.split(":"))
+            timing_interval = timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid timing format. Expected HH:MM:SS.")
 
-    if query.error:
-        raise HTTPException(status_code=500, detail=f"Failed to submit timing: {query.error.message}")
+        today = datetime.utcnow().date()  # Get today's date
 
-    return {"success": True, "message": "Timing recorded successfully!"}
+        # Insert into Supabase
+        response = supa.table("timings").insert({
+            "user_id": data.user_id,
+            "timing": str(timing_interval),  # Convert timedelta to string
+            "date": today,
+        }).execute()
+
+        return {"message": "Timing submitted successfully!", "response": response}
+
+    except Exception as e:
+        print("Error submitting timing:", str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to submit timing: {str(e)}")
 
 # 🚀 Get Daily Leaderboard Endpoint
 @app.get("/globalLeaderboard")
