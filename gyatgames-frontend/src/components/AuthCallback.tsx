@@ -22,7 +22,7 @@ function AuthCallback() {
             }
 
             // ✅ Fetch user details from /me after setting the token
-            axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/me", {
+            axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/o_me", {
                 headers: { Authorization: `Bearer ${accessToken}` },
             })
             .then(response => {

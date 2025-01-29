@@ -393,6 +393,43 @@ def oAuth_callback(code: str):
     redirect_url = f"{frontend_redirect_url}?{requests.compat.urlencode(query_params)}"
     return RedirectResponse(redirect_url)
 
+import requests
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer
+
+security = HTTPBearer()
+
+GOOGLE_TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo"
+
+@app.get("/o_me")
+def o_get_current_user(token: str = Depends(security)):
+    """
+    Verify Google OAuth access token using Google's token info endpoint.
+    """
+    try:
+        print("Received token:", token.credentials)  # Debugging
+        response = requests.get(GOOGLE_TOKEN_INFO_URL, params={"access_token": token.credentials})
+        token_data = response.json()
+
+        if "error" in token_data:
+            print("Google token verification error:", token_data["error"])
+            raise HTTPException(status_code=401, detail="Invalid access token")
+
+        user_email = token_data.get("email")
+        if not user_email:
+            raise HTTPException(status_code=401, detail="Token is missing email")
+
+        # Query user details from the Supabase database
+        user_response = supa.table("profiles").select("*").eq("email", user_email).execute()
+        if not user_response.data:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        return user_response.data[0]  # Return user details
+
+    except Exception as e:
+        print("Token verification error:", e)
+        raise HTTPException(status_code=401, detail="Token verification failed")
+
 def fetch_clues_from_supabase():
     response = supa.table("words").select("*").execute()
 
