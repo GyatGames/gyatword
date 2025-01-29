@@ -575,16 +575,17 @@ def submit_timing(data: TimingSubmission):
     """ Endpoint to submit a crossword completion time in seconds """
 
     try:
-        today = datetime.utcnow().date().isoformat()
+        today = datetime.utcnow().date().isoformat()  # Convert date to string
 
         # ✅ Insert or update timing in Supabase
         response = supa.table("timings").upsert({
             "user_id": data.user_id,
-            "date": today,
-            "timing": data.timing
+            "date": today,  # Store as a string (YYYY-MM-DD)
+            "timing": data.timing  # Store as integer seconds
         }).execute()
 
-        if response.error:
+        # ✅ Use `status_code` instead of `error`
+        if response.status_code != 200:
             raise HTTPException(status_code=500, detail="Failed to insert timing.")
 
         return {"success": True, "message": "Timing submitted successfully!"}
