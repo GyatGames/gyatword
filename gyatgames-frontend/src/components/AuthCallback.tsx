@@ -17,6 +17,7 @@ function AuthCallback() {
         if (accessToken) {
             // Store tokens
             localStorage.setItem("authToken", accessToken);
+            console.log("stored access token");
             if (refreshToken) {
                 localStorage.setItem("refreshToken", refreshToken);
             }
