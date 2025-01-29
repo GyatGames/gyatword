@@ -8,6 +8,7 @@ function AuthCallback() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log("Raw query string:", window.location.search); // ✅ Debug query string
         const params = new URLSearchParams(window.location.search);
         const accessToken = params.get("access_token");
         const refreshToken = params.get("refresh_token");
