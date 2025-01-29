@@ -81,9 +81,12 @@ function MobileClueDisplay() {
         }
     }, [selectedDirection, selectedNumber]);
 
-    const currentClueText =
-        clues?.[currentClue.direction as 'across' | 'down']?.find(c => c.number === currentClue.number)
-            ?.clue || 'No clue available';
+    const currentClueData =
+        clues?.[currentClue.direction as 'across' | 'down']?.find(c => c.number === currentClue.number);
+
+    const currentClueText = currentClueData?.clue || 'No clue available';
+    const isCorrect = currentClueData?.correct;
+
 
     return (
         <div className="mobile-clue-display flex max-h-9 items-center justify-between bg-primary p-2 rounded shadow-md">
@@ -93,7 +96,10 @@ function MobileClueDisplay() {
             >
                 &lt;
             </button>
-            <div className="text-left text-xxs overflow-y-scroll font-bold">
+            <div
+                className={`text-left text-xxs overflow-y-scroll font-bold clue ${isCorrect ? 'correct' : ''
+                    }`}
+            >
                 {currentClue.number ? `${currentClue.number}: ${currentClueText}` : 'No clue selected'}
             </div>
             <button

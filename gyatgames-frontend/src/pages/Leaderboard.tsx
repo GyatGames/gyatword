@@ -38,7 +38,7 @@ export const Leaderboard = () => {
                         <TabsTrigger value="global">Global Leaderboard</TabsTrigger>
                         <TabsTrigger value="friends">Friends Leaderboard</TabsTrigger>
                     </TabsList>
-                    <TableCaption>
+                    <TableCaption className="md:text-lg">
                         Fastest completion times for {format(new Date(), "MMMM dd, yyyy")}.
                     </TableCaption>
                 </div>

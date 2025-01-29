@@ -14,7 +14,7 @@ import {
     //DropdownMenuLabel,
     //DropdownMenuSeparator,
     DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 import PopupCorrect from "@/components/PopupCorrect";
 import PopupWrong from "@/components/PopupWrong";
@@ -30,6 +30,7 @@ import VirtualKeyboard from "@/components/VirtualKeyboard";
 import FillSelectedAnswer from "@/components/FillSelectedAnswer";
 import PopupHelp from "@/components/PopupHelp";
 import FillSelectedCell from "@/components/FillSelectedCell";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export const Gyatword = () => {
     const crosswordProvider = useRef<CrosswordProviderImperative>(null);
@@ -42,34 +43,34 @@ export const Gyatword = () => {
     const isMobile = useIsMobile();
     const theme = isDarkMode ? darkTheme : lightTheme;
 
-    
+
     // hide native keyboard on mobile
     useEffect(() => {
         const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    
+
         if (isMobile) {
-          // Ensure the effect runs after the crossword grid has rendered
-          const inputElement = document.querySelector('input[aria-label="crossword-input"]');
-          if (inputElement) {
-            inputElement.setAttribute("readOnly", "true"); // Make the input read-only
-            inputElement.setAttribute("display", "none"); // Make the input read-only
+            // Ensure the effect runs after the crossword grid has rendered
+            const inputElement = document.querySelector('input[aria-label="crossword-input"]');
+            if (inputElement) {
+                inputElement.setAttribute("readOnly", "true"); // Make the input read-only
+                inputElement.setAttribute("display", "none"); // Make the input read-only
 
-          }
+            }
         }
-      }, []); // Empty dependency array ensures this runs once after mount
+    }, []); // Empty dependency array ensures this runs once after mount
 
-      useEffect(() => {
+    useEffect(() => {
         const observer = new MutationObserver(() => {
-          const inputElement = document.querySelector('input[aria-label="crossword-input"]');
-          if (inputElement) {
-            inputElement.setAttribute("readOnly", "true");
-          }
+            const inputElement = document.querySelector('input[aria-label="crossword-input"]');
+            if (inputElement) {
+                inputElement.setAttribute("readOnly", "true");
+            }
         });
-      
+
         observer.observe(document.body, { childList: true, subtree: true });
-      
+
         return () => observer.disconnect();
-      }, []);
+    }, []);
 
     // fill all answers prop
     const fillAllAnswersProvider = useCallback<React.MouseEventHandler>(
@@ -116,7 +117,7 @@ export const Gyatword = () => {
                     } else {
                         PopupCorrect(
                             hintCount > 0
-                                ? `You completed the Gyatword in ` + `${timeString}`.bold() +` with ${hintCount} hint${hintCount !== 1 ? "s" : ""}!`
+                                ? `You completed the Gyatword in ` + `${timeString}`.bold() + ` with ${hintCount} hint${hintCount !== 1 ? "s" : ""}!`
                                 : `You completed the Gyatword in ${timeString}!`
                         );
                     }
@@ -150,7 +151,12 @@ export const Gyatword = () => {
 
 
     if (loading) {
-        return <p>Loading gyatword...</p>;
+        return (
+            <div className="flex flex-col h-screen-minus-57 items-center justify-center">
+                <LoadingSpinner />
+            </div>
+        )
+
     }
 
     if (error) {

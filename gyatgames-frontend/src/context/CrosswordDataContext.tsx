@@ -10,6 +10,7 @@ interface CrosswordDataContextProps {
     loading: boolean;
     error: string | null;
 }
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const CrosswordDataContext = createContext<CrosswordDataContextProps | undefined>(undefined);
 
@@ -21,7 +22,8 @@ export const CrosswordDataProvider: React.FC<{ children: React.ReactNode }> = ({
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('https://gyatwordapi.deploy.jensenhshoots.com/getGyatword');
+                const response = await fetch(`${API_BASE_URL}/getGyatword`);
+                console.log('fetched crossword data');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
