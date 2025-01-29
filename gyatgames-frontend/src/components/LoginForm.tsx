@@ -41,7 +41,7 @@ export function LoginForm({
             const errorMessage =
                 err.response?.message ||
                 err.response?.data?.message || // Backend-specific error message
-                "An unexpected error occurred. Please try again.";
+                "An unexpected error occurred. Please check your login details and try again.";
 
             // Show SweetAlert2 popup for errors
             Swal.fire({

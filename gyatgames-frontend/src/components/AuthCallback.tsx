@@ -3,6 +3,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 function AuthCallback() {
     const { setUser } = useAuth();
     const navigate = useNavigate();
@@ -21,7 +23,7 @@ function AuthCallback() {
             }
 
             // ✅ Fetch user details from /me after setting the token
-            axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/o_me", {
+            axios.get(`${API_BASE_URL}/o_me`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             })
             .then(response => {

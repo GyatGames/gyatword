@@ -20,6 +20,7 @@ type AuthContextType = {
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const refreshAccessToken = async (refreshToken: string) => {
         try {
-            const response = await axios.post("https://gyatwordapi-test.deploy.jensenhshoots.com/refresh", {
+            const response = await axios.post(`${API_BASE_URL}/refresh`, {
                 refresh_token: refreshToken,
             });
     
@@ -51,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Function to handle login
     const login = async (email: string, password: string) => {
         try {
-            const response = await axios.post("https://gyatwordapi-test.deploy.jensenhshoots.com/login", { email, password });
+            const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
             console.log("Login response:", response.data); // Debugging
 
             const { access_token, refresh_token, username } = response.data;
@@ -87,7 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Function to handle signup
     const signup = async (username: string, email: string, password: string) => {
         try {
-            const response = await axios.post("https://gyatwordapi-test.deploy.jensenhshoots.com/signup", { username, email, password });
+            const response = await axios.post(`${API_BASE_URL}/signup`, { username, email, password });
             setUser(response.data.user); // Assuming the backend returns user data
             localStorage.setItem("authToken", response.data.token); // Save token for future requests
         } catch (error) {
@@ -109,7 +110,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // **OAuth login function**
     const oAuthLogin = () => {
-        window.location.href = "https://gyatwordapi-test.deploy.jensenhshoots.com/oAuth_login";
+        window.location.href = `${API_BASE_URL}/oAuth_login`;
     };
 
     useEffect(() => {
@@ -130,7 +131,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 }
             } else if (token) {
                 try {
-                    const response = await axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/me", {
+                    const response = await axios.get(`${API_BASE_URL}/me`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
 
@@ -145,7 +146,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 }
             } else if (o_token) {
                 try {
-                    const response = await axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/o_me", {
+                    const response = await axios.get(`${API_BASE_URL}/o_me`, {
                         headers: { Authorization: `Bearer ${o_token}` },
                     });
 
