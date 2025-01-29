@@ -12,11 +12,12 @@ function AuthCallback() {
         const params = new URLSearchParams(window.location.search);
         const accessToken = params.get("access_token");
         const refreshToken = params.get("refresh_token");
-        console.log("accesstoken: " + accessToken)
+        console.log("accesstoken 1: " + accessToken)
 
         if (accessToken) {
             // Store tokens
-            localStorage.setItem("authToken", accessToken);
+            console.log("accesstoken 2: " + accessToken)
+            localStorage.setItem("authToken", accessToken.toString());
             localStorage.setItem("key", "value");
 
             console.log("stored access token");
