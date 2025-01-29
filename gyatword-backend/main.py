@@ -333,7 +333,7 @@ def oAuth_callback(code: str):
     Handles the callback from Google with the authorization code.
     """
     sgt_timezone = timezone(timedelta(hours=8))
-    today = datetime.now(sgt_timezone).date()
+    today = datetime.now(sgt_timezone)
     # Exchange authorization code for access token
     token_data = {
         "code": code,
