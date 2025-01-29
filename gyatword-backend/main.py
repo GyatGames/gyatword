@@ -575,7 +575,7 @@ def submit_timing(data: TimingSubmission):
     """ Endpoint to submit a crossword completion time in seconds """
 
     try:
-        today = datetime.utcnow().date()
+        today = datetime.utcnow().date().isoformat()
 
         # ✅ Insert or update timing in Supabase
         response = supa.table("timings").upsert({
