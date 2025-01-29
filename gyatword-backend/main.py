@@ -630,8 +630,8 @@ def get_global_leaderboard():
         .limit(10)  # ✅ Get top 10
         .execute()
     )
-
-    if response.error:
+    if hasattr(response, "error") and response.error:
+        print(f"Supabase Query Error: {response.error}")
         raise HTTPException(status_code=500, detail="Failed to fetch leaderboard.")
 
     leaderboard_data = response.data
