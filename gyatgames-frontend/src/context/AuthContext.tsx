@@ -16,7 +16,7 @@ type AuthContextType = {
     signup: (username: string, email: string, password: string) => Promise<void>;
     logout: () => void;
     oAuthLogin: () => void; // Redirect user to Google OAuth
-    handleOAuthCallback: (code: string) => Promise<void>; // Handle OAuth callback
+    // handleOAuthCallback: (code: string) => Promise<void>; // Handle OAuth callback
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
