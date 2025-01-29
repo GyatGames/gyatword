@@ -570,22 +570,24 @@ class TimingSubmission(BaseModel):
     user_id: str
     timing: int  # Ensure this is correctly formatted as 'HH:MM:SS'
 
+
 @app.post("/submit_timing")
 def submit_timing(data: TimingSubmission):
     """ Endpoint to submit a crossword completion time in seconds """
 
     try:
-        today = datetime.utcnow().date().isoformat()  # Convert date to string
+        today = datetime.utcnow().date().isoformat()  # Convert date to string (YYYY-MM-DD)
 
         # ✅ Insert or update timing in Supabase
         response = supa.table("timings").upsert({
             "user_id": data.user_id,
-            "date": today,  # Store as a string (YYYY-MM-DD)
-            "timing": data.timing  # Store as integer seconds
+            "date": today,  # Store as a string
+            "timing": data.timing  # Store as integer (seconds)
         }).execute()
 
-        # ✅ Use `status_code` instead of `error`
-        if response.status_code != 200:
+        # ✅ Fix: Check if `error` exists in response
+        if hasattr(response, "error") and response.error:
+            print(f"Supabase Insert Error: {response.error}")
             raise HTTPException(status_code=500, detail="Failed to insert timing.")
 
         return {"success": True, "message": "Timing submitted successfully!"}
