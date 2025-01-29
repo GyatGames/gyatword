@@ -154,6 +154,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const checkAuth = async () => {
             const token = localStorage.getItem("authToken");
             const refreshToken = localStorage.getItem("refreshToken");
+            const o_token = localStorage.getItem("OauthToken");
+
     
             if (!token && refreshToken) {
                 try {
@@ -178,6 +180,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 } catch (error) {
                     console.error("Failed to fetch user:", error);
                     localStorage.removeItem("authToken");
+                }
+            } else if (o_token) {
+                try {
+                    const response = await axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/o_me", {
+                        headers: { Authorization: `Bearer ${o_token}` },
+                    });
+
+                    console.log("Response from /o_me:", response.data); // Log to ensure correctness
+
+                    setUser(response.data);
+                    console.log("set user through Oauth token: " + response.data);
+
+                } catch (error) {
+                    console.error("Failed to fetch user:", error);
+                    localStorage.removeItem("OauthToken");
                 }
             }
         };
