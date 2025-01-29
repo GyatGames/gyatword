@@ -109,36 +109,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const oAuthLogin = () => {
         window.location.href = "https://gyatwordapi-test.deploy.jensenhshoots.com/oAuth_login";
     };
-
-    // **Handle OAuth callback function**
-    const handleOAuthCallback = async (code: string) => {
+    const handleOAuthCallback = async () => {
         try {
-            const response = await axios.get(
-                `https://gyatwordapi-test.deploy.jensenhshoots.com/oAuth_callback?code=${code}`
-            );
-
-            console.log("OAuth Response:", response.data);
-
-            const { access_token, refresh_token, username } = response.data;
-
-            if (!access_token) {
-                throw new Error("Access token is missing from OAuth response");
+            // Parse query parameters from the current URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const accessToken = urlParams.get("access_token");
+            const refreshToken = urlParams.get("refresh_token");
+    
+            if (!accessToken) {
+                throw new Error("Access token is missing from the OAuth callback URL.");
             }
-
-            // Store tokens
-            localStorage.setItem("authToken", access_token);
-            if (refresh_token) {
-                localStorage.setItem("refreshToken", refresh_token);
+    
+            // Store tokens in localStorage
+            localStorage.setItem("authToken", accessToken);
+            if (refreshToken) {
+                localStorage.setItem("refreshToken", refreshToken);
             }
-
-            // Set user in context
-            setUser({
-                username,
-                email: "", // Google OAuth doesn't return email directly here
-                id: "", // Google OAuth ID isn't stored in this response
-            });
-
-
+    
+            // Decode the access token to extract user information
+            const decodedToken = JSON.parse(atob(accessToken.split(".")[1]));
+            console.log("Decoded Token:", decodedToken);
+    
+            const user = {
+                username: decodedToken.name || "Unknown User", // Extracted from token
+                email: decodedToken.email || "", // Extracted from token
+                id: decodedToken.sub || "", // Extracted from token
+            };
+    
+            // Set the user in context
+            setUser(user);
+    
+            console.log("OAuth login successful, user set:", user);
         } catch (error) {
             console.error("OAuth callback failed:", error);
             throw error;
