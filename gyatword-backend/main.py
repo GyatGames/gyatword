@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-from fastapi import FastAPI, HTTPException, HTTPException, Depends, Header, Body
+from fastapi import FastAPI, HTTPException, Depends, Header, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import RedirectResponse
@@ -83,11 +83,13 @@ async def validation_exception_handler(request, exc):
 async def root():
     return {"message": "Hello World"}
 
+
 # Request model
 class SignUpRequest(BaseModel):
     email: EmailStr
     password: str
     username: str
+
 
 class LogInRequest(BaseModel):
     email: EmailStr
@@ -107,32 +109,44 @@ async def signup(user: SignUpRequest):
     try:
         # Validate input
         if not user.email or not user.password or not user.username:
-            raise HTTPException(status_code=400, detail="Email, password, and username are required.")
+            raise HTTPException(
+                status_code=400, detail="Email, password, and username are required."
+            )
 
         # Create user in Supabase Auth
-        auth_response = supa.auth.sign_up({"email": user.email, "password": user.password})
+        auth_response = supa.auth.sign_up(
+            {"email": user.email, "password": user.password}
+        )
 
         # Check for errors in the response
         if auth_response.user is None:
             raise HTTPException(
-                status_code=400, 
-                detail=auth_response.error.message if auth_response.error else "Unknown authentication error."
+                status_code=400,
+                detail=auth_response.error.message
+                if auth_response.error
+                else "Unknown authentication error.",
             )
 
         user_id = auth_response.user.id  # Accessing user ID correctly
 
         # Insert the username into the profiles table
-        profile_response = supa.table("profiles").insert({
-            "id": user_id,  # Ensure 'id' matches the primary key in the 'profiles' table
-            "username": user.username,
-            "email": user.email
-        }).execute()
+        profile_response = (
+            supa.table("profiles")
+            .insert(
+                {
+                    "id": user_id,  # Ensure 'id' matches the primary key in the 'profiles' table
+                    "username": user.username,
+                    "email": user.email,
+                }
+            )
+            .execute()
+        )
 
         # Check for errors in profile response
         if "error" in profile_response and profile_response.error is not None:
             raise HTTPException(
                 status_code=400,
-                detail=f"Failed to create user profile: {profile_response.error.message}"
+                detail=f"Failed to create user profile: {profile_response.error.message}",
             )
 
         # Return the JWT token and profile info
@@ -140,22 +154,22 @@ async def signup(user: SignUpRequest):
             "success": True,
             "access_token": auth_response.session.access_token,  # Access session correctly
             "refresh_token": auth_response.session.refresh_token,
-            "user": {
-                "id": user_id,
-                "email": user.email,
-                "username": user.username
-            }
+            "user": {"id": user_id, "email": user.email, "username": user.username},
         }
 
     except KeyError as ke:
         # Handle missing keys in the response
-        raise HTTPException(status_code=500, detail=f"Missing key in response: {str(ke)}")
+        raise HTTPException(
+            status_code=500, detail=f"Missing key in response: {str(ke)}"
+        )
     except ValueError as ve:
         # Handle unexpected values
         raise HTTPException(status_code=400, detail=f"Value error: {str(ve)}")
     except Exception as e:
         # Catch-all for other exceptions
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
+        )
 
 
 @app.post("/login")
@@ -166,7 +180,9 @@ async def login(user: LogInRequest):
     try:
         # Validate input
         if not user.email or not user.password:
-            raise HTTPException(status_code=400, detail="Email and password are required.")
+            raise HTTPException(
+                status_code=400, detail="Email and password are required."
+            )
 
         # Authenticate user using Supabase
         response = supa.auth.sign_in_with_password({
@@ -188,12 +204,11 @@ async def login(user: LogInRequest):
         
         
         # # Fetch user profile from Supabase
+
+        # Fetch user profile from Supabase
         user_id = response.user.id  # Get the user ID from the authentication response
         profile_response = (
-            supa.table("profiles")
-            .select("username")
-            .eq("id", user_id)
-            .execute()
+            supa.table("profiles").select("username").eq("id", user_id).execute()
         )
         # Check for errors in the profile query
         if hasattr(profile_response, "error") and profile_response.error:
@@ -218,10 +233,13 @@ async def login(user: LogInRequest):
 
     except KeyError as ke:
         # Handle missing keys in the response
-        raise HTTPException(status_code=500, detail=f"Missing key in response: {str(ke)}")
+        raise HTTPException(
+            status_code=500, detail=f"Missing key in response: {str(ke)}"
+        )
     except ValueError as ve:
         # Handle unexpected values
         raise
+
 
 @app.get("/getGyatword")
 async def getGyatword():
@@ -250,7 +268,8 @@ async def getGyatword():
         ).execute()
 
         return result  # json.dumps(result, indent=2)
-    
+
+
 @app.get("/getStreaks")
 async def getStreaks(userID: str):  # Explicitly declare `userID` as a query parameter
     """
@@ -277,15 +296,20 @@ async def getStreaks(userID: str):  # Explicitly declare `userID` as a query par
             # Return max and current streaks
             return {
                 "max_streak": response.data[0]["max_streak"],
-                "current_streak": response.data[0]["current_streak"]
+                "current_streak": response.data[0]["current_streak"],
             }
         else:
             # Handle the case where no data is found
-            raise HTTPException(status_code=404, detail="Streaks not found for the given user ID.")
+            raise HTTPException(
+                status_code=404, detail="Streaks not found for the given user ID."
+            )
 
     except Exception as e:
         # General error handling
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
+        )
+
 
 @app.get("/oAuth_login")
 def oAuth_login():
@@ -308,6 +332,8 @@ def oAuth_callback(code: str):
     """
     Handles the callback from Google with the authorization code.
     """
+    sgt_timezone = timezone(timedelta(hours=8))
+    today = datetime.now(sgt_timezone).date()
     # Exchange authorization code for access token
     token_data = {
         "code": code,
@@ -323,7 +349,8 @@ def oAuth_callback(code: str):
         print("token_response_data: ", token_response_data)
         raise HTTPException(status_code=400, detail="Failed to fetch access token")
 
-    access_token = token_response_data["access_token"]
+    access_token = token_response_data.get("access_token")
+    refresh_token = token_response_data.get("refresh_token")
 
     # Fetch user information
     user_info_response = requests.get(
@@ -332,21 +359,40 @@ def oAuth_callback(code: str):
     user_info = user_info_response.json()
 
     # Check if the email already exists in the database
-    existing_user_response = supa.table("profiles").select("*").eq("email", user_info["email"]).execute()
+    existing_user_response = (
+        supa.table("profiles").select("*").eq("email", user_info["email"]).execute()
+    )
 
     if existing_user_response.data:
-        return {"message": "User already exists", "user_info": user_info}
-
+        # User exists, update last login time
+        supa.table("profiles").update({"updated_at": today.isoformat()}).eq("email", user_info.get("email")).execute()
+        
+        return {"success": True,
+            "message": "Login successful",
+            "access_token": access_token,
+            "refresh_token": refresh_token if refresh_token else "",
+            }
+    
     # Insert user information into Supabase database
     user_data = {
-        "username": user_info["name"],
-        "email": user_info["email"],
-        "created_at": datetime.utcnow().isoformat()
+        "username": user_info.get("name"),
+        "email": user_info.get("email"),
+        "created_at": today.isoformat(),
+        "oAuth_provider": 'google',
+        "updated_at": today.isoformat(),
     }
+    if refresh_token:
+        user_data["refresh_token"] = refresh_token  # Store only if available
+        
     response = supa.table("profiles").insert(user_data).execute()
     print(response)
 
-    return {"message": "Authentication successful", "user_info": user_info}
+    return {
+            "success": True,
+            "message": "Login successful",
+            "access_token": access_token,
+            "refresh_token": refresh_token if refresh_token else "",
+        }
 
 
 def fetch_clues_from_supabase():
