@@ -111,44 +111,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const oAuthLogin = () => {
         window.location.href = "https://gyatwordapi-test.deploy.jensenhshoots.com/oAuth_login";
     };
-    const handleOAuthCallback = async () => {
-        try {
-            // Parse query parameters from the current URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const accessToken = urlParams.get("access_token");
-            const refreshToken = urlParams.get("refresh_token");
-            const username = urlParams.get("username");
+    // const handleOAuthCallback = async () => {
+    //     try {
+    //         // Parse query parameters from the current URL
+    //         const urlParams = new URLSearchParams(window.location.search);
+    //         const accessToken = urlParams.get("access_token");
+    //         const refreshToken = urlParams.get("refresh_token");
+    //         const username = urlParams.get("username");
 
     
-            if (!accessToken) {
-                throw new Error("Access token is missing from the OAuth callback URL.");
-            }
+    //         if (!accessToken) {
+    //             throw new Error("Access token is missing from the OAuth callback URL.");
+    //         }
     
-            // Store tokens in localStorage
-            localStorage.setItem("authToken", accessToken);
-            if (refreshToken) {
-                localStorage.setItem("refreshToken", refreshToken);
-            }
+    //         // Store tokens in localStorage
+    //         localStorage.setItem("authToken", accessToken);
+    //         if (refreshToken) {
+    //             localStorage.setItem("refreshToken", refreshToken);
+    //         }
     
-            // Decode the access token to extract user information
-            const decodedToken = JSON.parse(atob(accessToken.split(".")[1]));
-            console.log("Decoded Token:", decodedToken);
+    //         // Decode the access token to extract user information
+    //         const decodedToken = JSON.parse(atob(accessToken.split(".")[1]));
+    //         console.log("Decoded Token:", decodedToken);
     
-            const user = {
-                username: username || "Unknown User", // Extracted from token
-                email: decodedToken.email || "", // Extracted from token
-                id: decodedToken.sub || "", // Extracted from token
-            };
+    //         const user = {
+    //             username: username || "Unknown User", // Extracted from token
+    //             email: decodedToken.email || "", // Extracted from token
+    //             id: decodedToken.sub || "", // Extracted from token
+    //         };
     
-            // Set the user in context
-            setUser(user);
+    //         // Set the user in context
+    //         setUser(user);
     
-            console.log("OAuth login successful, user set:", user);
-        } catch (error) {
-            console.error("OAuth callback failed:", error);
-            throw error;
-        }
-    };
+    //         console.log("OAuth login successful, user set:", user);
+    //     } catch (error) {
+    //         console.error("OAuth callback failed:", error);
+    //         throw error;
+    //     }
+    // };
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -195,7 +195,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 signup,
                 logout,
                 oAuthLogin,
-                handleOAuthCallback,
+                // handleOAuthCallback,
             }}
         >
             {children}
