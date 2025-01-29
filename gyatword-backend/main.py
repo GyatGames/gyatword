@@ -570,6 +570,14 @@ class TimingSubmission(BaseModel):
     user_id: str
     timing: int  # Ensure this is correctly formatted as 'HH:MM:SS'
 
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from datetime import datetime
+import supabase
+
+class TimingSubmission(BaseModel):
+    user_id: str
+    timing: int  # Store as an integer (seconds)
 
 @app.post("/submit_timing")
 def submit_timing(data: TimingSubmission):
@@ -578,16 +586,28 @@ def submit_timing(data: TimingSubmission):
     try:
         today = datetime.utcnow().date().isoformat()  # Convert date to string (YYYY-MM-DD)
 
-        # ✅ Insert or update timing in Supabase
-        response = supa.table("timings").upsert({
+        # ✅ Step 1: Check if the user already has a timing for today
+        existing_response = (
+            supa.table("timings")
+            .select("id")
+            .eq("user_id", data.user_id)
+            .eq("date", today)
+            .execute()
+        )
+
+        if existing_response.data:  # If a timing exists, reject submission
+            return {"success": False, "message": "Timing already recorded. Only first attempt counts."}
+
+        # ✅ Step 2: Insert the first valid timing
+        insert_response = supa.table("timings").insert({
             "user_id": data.user_id,
             "date": today,  # Store as a string
             "timing": data.timing  # Store as integer (seconds)
         }).execute()
 
         # ✅ Fix: Check if `error` exists in response
-        if hasattr(response, "error") and response.error:
-            print(f"Supabase Insert Error: {response.error}")
+        if hasattr(insert_response, "error") and insert_response.error:
+            print(f"Supabase Insert Error: {insert_response.error}")
             raise HTTPException(status_code=500, detail="Failed to insert timing.")
 
         return {"success": True, "message": "Timing submitted successfully!"}
@@ -606,8 +626,8 @@ def get_global_leaderboard():
         supa.table("timings")
         .select("user_id, timing")
         .eq("date", today)
-        .order("timing", asc=True)  # ✅ Sorting in ascending order (fastest first)
-        .limit(10)
+        .order("timing", desc=False)  # ✅ FIXED: Use "desc=False" for ascending order
+        .limit(10)  # ✅ Get top 10
         .execute()
     )
 
