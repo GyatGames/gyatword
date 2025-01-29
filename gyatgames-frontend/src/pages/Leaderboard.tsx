@@ -7,7 +7,7 @@ import { fetchFriendsLeaderboard, fetchGlobalLeaderboard } from "@/lib/utils";
 
 type LeaderboardEntry = {
     username: string;
-    time: number;
+    timing: number;
 };
 
 export const Leaderboard = () => {

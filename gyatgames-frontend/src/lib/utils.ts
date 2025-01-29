@@ -64,18 +64,18 @@ export { lightTheme, darkTheme };
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Submit a new timing for the leaderboard
-export async function submitTiming(userId: string, time: number) {
+export async function submitTiming(userId: string, timing: number) {
   try {
-    const response = await fetch(`${API_BASE_URL}/submit_time`, {
+    const response = await fetch(`${API_BASE_URL}/submit_timing`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: userId, time }),
+      body: JSON.stringify({ user_id: userId, timing }),
     });
     const data = await response.json();
-    console.log("Time submission response:", data);
+    console.log("Timing submission response:", data);
     return data;
   } catch (error) {
-    console.error("Failed to submit time:", error);
+    console.error("Failed to submit timing:", error);
     throw error;
   }
 }

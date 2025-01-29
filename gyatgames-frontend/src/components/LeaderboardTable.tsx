@@ -10,7 +10,7 @@ import {
 
 type LeaderboardEntry = {
     username: string;
-    time: number;
+    timing: number;
 };
 
 type LeaderboardTableProps = {
@@ -26,7 +26,7 @@ function formatTime(seconds: number): string {
 }
 
 export function LeaderboardTable({ data }: LeaderboardTableProps) {
-    const sortedLeaderboard = [...data].sort((a, b) => a.time - b.time);
+    const sortedLeaderboard = [...data].sort((a, b) => a.timing - b.timing);
 
     return (
         <Table>
@@ -43,7 +43,7 @@ export function LeaderboardTable({ data }: LeaderboardTableProps) {
                         <TableCell className="font-medium">{index + 1}</TableCell>
                         <TableCell>{entry.username}</TableCell>
                         <TableCell className="text-right">
-                            {formatTime(entry.time)}
+                            {formatTime(entry.timing)}
                         </TableCell>
                     </TableRow>
                 ))}

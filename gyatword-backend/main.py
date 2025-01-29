@@ -589,7 +589,7 @@ def submit_timing(data: TimingSubmission):
         # ✅ Step 1: Check if the user already has a timing for today
         existing_response = (
             supa.table("timings")
-            .select("id")
+            .select("*")
             .eq("user_id", data.user_id)
             .eq("date", today)
             .execute()
@@ -624,9 +624,9 @@ def get_global_leaderboard():
     
     response = (
         supa.table("timings")
-        .select("user_id, time")
+        .select("user_id, timing")
         .eq("date", today)
-        .order("time", desc=False)  # ✅ FIXED: Use "desc=False" for ascending order
+        .order("timing", desc=False)  # ✅ FIXED: Use "desc=False" for ascending order
         .limit(10)  # ✅ Get top 10
         .execute()
     )
