@@ -1,16 +1,18 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 function AuthCallback() {
-    const { setUser } = useAuth();
+    const { setUser } = useAuth(); // ✅ Make sure `setUser` is available
     const navigate = useNavigate();
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const accessToken = params.get("access_token");
-        const refreshToken = params.get("refresh_token");
+        const refreshToken = params.get("refresh_token") || ""; // Handle empty refresh token
+        const username = params.get("username") || "Unknown"; // Use default if missing
+
+        console.log("Extracted OAuth Data:", { accessToken, refreshToken, username }); // ✅ Debugging
 
         if (accessToken) {
             // Store tokens
@@ -19,26 +21,21 @@ function AuthCallback() {
                 localStorage.setItem("refreshToken", refreshToken);
             }
 
-            // ✅ Fetch user details from /me after setting the token
-            axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/me", {
-                headers: { Authorization: `Bearer ${accessToken}` },
-            })
-            .then(response => {
-                console.log("Fetched user profile:", response.data);
-                setUser(response.data); // ✅ Set user in context
-                navigate("/"); // Redirect home
-            })
-            .catch(error => {
-                console.error("Failed to fetch user profile:", error);
-                navigate("/error"); // Redirect if failed
+            // Set user in context
+            setUser({
+                username,
+                email: "", // Google OAuth does not return email in URL
+                id: "", // Google OAuth ID isn't stored in this response
             });
-        } else {
-            console.error("OAuth callback failed: Missing access token");
-            navigate("/error");
-        }
-    }, [navigate, setUser]);
 
-    return <div>Loading...</div>; // Show a loading indicator
+            navigate("/"); // ✅ Redirect to homepage after login
+        } else {
+            console.error("No access token found in callback URL");
+            navigate("/auth"); // Redirect to auth page on failure
+        }
+    }, []);
+
+    return <div>Loading...</div>; // Show a spinner or loading state
 }
 
 export default AuthCallback;

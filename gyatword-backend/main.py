@@ -385,7 +385,7 @@ def oAuth_callback(code: str):
         print(response)
 
     # Redirect the user back to the frontend with tokens
-    frontend_redirect_url = f"https://your-frontend-url.com/auth/callback"
+    frontend_redirect_url = f"https://test-gyatword.deploy.jensenhshoots.com/auth/callback"
     query_params = {
         "access_token": access_token,
         "refresh_token": refresh_token if refresh_token else "",
