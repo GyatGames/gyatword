@@ -325,7 +325,6 @@ def oAuth_login():
     }
     redirect_url = f"{AUTH_URL}?{requests.compat.urlencode(query_params)}"
     return RedirectResponse(redirect_url)
-
 @app.get("/oAuth_callback")
 def oAuth_callback(code: str):
     """
@@ -382,15 +381,15 @@ def oAuth_callback(code: str):
         response = supa.table("profiles").insert(user_data).execute()
         print(response)
 
-    # Redirect the user back to the frontend with tokens
+    # Redirect the user back to the frontend with tokens and username
     frontend_redirect_url = f"https://test-gyatword.deploy.jensenhshoots.com/auth/callback"
     query_params = {
         "access_token": access_token,
         "refresh_token": refresh_token if refresh_token else "",
+        "username": user_info.get("name"),  # Include username
     }
     redirect_url = f"{frontend_redirect_url}?{requests.compat.urlencode(query_params)}"
     return RedirectResponse(redirect_url)
-
 
 def fetch_clues_from_supabase():
     response = supa.table("words").select("*").execute()

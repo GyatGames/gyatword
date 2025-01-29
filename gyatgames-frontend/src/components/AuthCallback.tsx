@@ -1,26 +1,44 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function AuthCallback() {
-    const { handleOAuthCallback } = useAuth();
+    const { setUser } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
+        const accessToken = params.get("access_token");
+        const refreshToken = params.get("refresh_token");
 
-        if (code) {
-            handleOAuthCallback(code).then(() => {
-                // Redirect to the homepage after successful OAuth handling
-                navigate("/");
-            }).catch((error) => {
-                console.error("OAuth handling failed:", error);
+        if (accessToken) {
+            // Store tokens
+            localStorage.setItem("authToken", accessToken);
+            if (refreshToken) {
+                localStorage.setItem("refreshToken", refreshToken);
+            }
+
+            // ✅ Fetch user details from /me after setting the token
+            axios.get("https://gyatwordapi-test.deploy.jensenhshoots.com/me", {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            })
+            .then(response => {
+                console.log("Fetched user profile:", response.data);
+                setUser(response.data); // ✅ Set user in context
+                navigate("/"); // Redirect home
+            })
+            .catch(error => {
+                console.error("Failed to fetch user profile:", error);
+                navigate("/error"); // Redirect if failed
             });
+        } else {
+            console.error("OAuth callback failed: Missing access token");
+            navigate("/error");
         }
-    }, []);
+    }, [navigate, setUser]);
 
-    return <div>Loading...</div>; // Show a spinner or loading state
+    return <div>Loading...</div>; // Show a loading indicator
 }
 
 export default AuthCallback;

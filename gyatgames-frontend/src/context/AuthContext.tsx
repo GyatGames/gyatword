@@ -10,6 +10,8 @@ type User = {
 type AuthContextType = {
     user: User | null;
     isAuthenticated: boolean;
+    setUser: (user: User | null) => void; 
+
     login: (email: string, password: string) => Promise<void>;
     signup: (username: string, email: string, password: string) => Promise<void>;
     logout: () => void;
@@ -115,6 +117,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const urlParams = new URLSearchParams(window.location.search);
             const accessToken = urlParams.get("access_token");
             const refreshToken = urlParams.get("refresh_token");
+            const username = urlParams.get("username");
+
     
             if (!accessToken) {
                 throw new Error("Access token is missing from the OAuth callback URL.");
@@ -131,7 +135,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             console.log("Decoded Token:", decodedToken);
     
             const user = {
-                username: decodedToken.name || "Unknown User", // Extracted from token
+                username: username || "Unknown User", // Extracted from token
                 email: decodedToken.email || "", // Extracted from token
                 id: decodedToken.sub || "", // Extracted from token
             };
@@ -186,6 +190,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             value={{
                 user,
                 isAuthenticated: !!user,
+                setUser,
                 login,
                 signup,
                 logout,
