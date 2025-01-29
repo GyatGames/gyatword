@@ -566,29 +566,20 @@ async def refresh_token(refresh_token: str = Body(...)):
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token.")
     
-
-# 🚀 Insert Timing Endpoint
 @app.post("/submit_timing")
 def submit_timing(user_id: str, timing: str):
     """
     Inserts or updates a user's crossword completion time for today.
     """
-    today = date.today().isoformat()  # Format: YYYY-MM-DD
+    today = date.today().isoformat()
 
-    # Check if user exists in profiles table
-    user_query = supa.table("profiles").select("id").eq("id", user_id).execute()
-
-    if user_query.error or not user_query.data:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    # Insert or update timing
     query = (
         supa.table("timings")
         .upsert(
             {
                 "user_id": user_id,
                 "date": today,
-                "timing": timing,  # String format: "00:03:25"
+                "timing": timing,
             },
             on_conflict=["user_id", "date"]
         )
@@ -601,7 +592,7 @@ def submit_timing(user_id: str, timing: str):
     return {"success": True, "message": "Timing recorded successfully!"}
 
 # 🚀 Get Daily Leaderboard Endpoint
-@app.get("/leaderboard")
+@app.get("/globalLeaderboard")
 def get_daily_leaderboard():
     """
     Fetches the top 10 fastest crossword completion times for today.

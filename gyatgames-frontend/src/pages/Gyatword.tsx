@@ -22,7 +22,7 @@ import Stopwatch from "@/components/Stopwatch";
 import { timer } from "@/components/timer";
 import { useCrosswordData } from "@/context/CrosswordDataContext";
 import { buttonVariants } from "@/components/ui/button";
-import { useDarkMode } from "@/lib/utils";
+import { submitTiming, useDarkMode } from "@/lib/utils";
 import { lightTheme, darkTheme } from "@/lib/utils";
 import MobileClueDisplay from "@/components/MobileClueDisplay";
 import { useIsMobile } from "@/lib/utils";
@@ -31,6 +31,7 @@ import FillSelectedAnswer from "@/components/FillSelectedAnswer";
 import PopupHelp from "@/components/PopupHelp";
 import FillSelectedCell from "@/components/FillSelectedCell";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { useAuth } from "@/context/AuthContext";
 
 export const Gyatword = () => {
     const crosswordProvider = useRef<CrosswordProviderImperative>(null);
@@ -42,6 +43,8 @@ export const Gyatword = () => {
     const isDarkMode = useDarkMode();
     const isMobile = useIsMobile();
     const theme = isDarkMode ? darkTheme : lightTheme;
+    const { isAuthenticated, user } = useAuth(); // Get user authentication status
+
 
 
     // hide native keyboard on mobile
@@ -91,7 +94,7 @@ export const Gyatword = () => {
     const onCrosswordCompleteProvider = useCallback<
         Required<CrosswordProviderProps>["onCrosswordComplete"]
     >(
-        (isCorrect: any) => {
+        async (isCorrect: any) => {
             if (isCorrect) {
                 if (pageTimer.current) {
                     setIsRunning(false);
@@ -120,6 +123,17 @@ export const Gyatword = () => {
                                 ? `You completed the Gyatword in ` + `${timeString}`.bold() + ` with ${hintCount} hint${hintCount !== 1 ? "s" : ""}!`
                                 : `You completed the Gyatword in ${timeString}!`
                         );
+                    }
+                    // ✅ Submit timing only if the user is logged in
+                    if (isAuthenticated && user) {
+                        try {
+                            await submitTiming(user.id, timeString);
+                            console.log("✅ Timing submitted successfully!");
+                        } catch (error) {
+                            console.error("❌ Failed to submit timing:", error);
+                        }
+                    } else {
+                        console.log("⚠️ User is not logged in, skipping timing submission.");
                     }
                 }
             } else {

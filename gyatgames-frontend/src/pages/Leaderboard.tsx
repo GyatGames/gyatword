@@ -1,35 +1,33 @@
+import { useState, useEffect } from "react";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { TableCaption } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
+import { fetchFriendsLeaderboard, fetchGlobalLeaderboard } from "@/lib/utils";
 
-const globalLeaderboardData = [
-    { username: "Alice", time: 85 },
-    { username: "Bob", time: 120 },
-    { username: "Charlie", time: 95 },
-    { username: "David", time: 75 },
-    { username: "Eve", time: 110 },
-    { username: "Frank", time: 100 },
-    { username: "Grace", time: 130 },
-    { username: "Hannah", time: 90 },
-    { username: "Ivy", time: 125 },
-    { username: "Jack", time: 105 },
-];
-
-const friendsLeaderboardData = [
-    { username: "Alice", time: 85 },
-    { username: "Bob", time: 120 },
-    { username: "Charlie", time: 95 },
-    { username: "David", time: 75 },
-    { username: "Eve", time: 110 },
-    { username: "Frank", time: 100 },
-    { username: "Grace", time: 130 },
-    { username: "Hannah", time: 90 },
-    { username: "Ivy", time: 125 },
-    { username: "Jack", time: 105 },
-];
+type LeaderboardEntry = {
+    username: string;
+    time: number;
+};
 
 export const Leaderboard = () => {
+    const [globalLeaderboardData, setGlobalLeaderboardData] = useState<LeaderboardEntry[]>([]);
+    const [friendsLeaderboardData, setFriendsLeaderboardData] = useState<LeaderboardEntry[]>([]);
+    // Fetch leaderboard data on mount
+    useEffect(() => {
+        async function loadLeaderboard() {
+            try {
+                const globalLeaderboardData = await fetchGlobalLeaderboard();
+                setGlobalLeaderboardData(globalLeaderboardData);
+                const friendsLeaderboardData = await fetchFriendsLeaderboard();
+                setFriendsLeaderboardData(friendsLeaderboardData);
+            } catch (error) {
+                console.error("Failed to fetch leaderboard:", error);
+            }
+        }
+        loadLeaderboard();
+    }, []);
+
     return (
         <div className="flex max-h-screen-minus-57 md:mt-10 items-start justify-center no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <Tabs defaultValue="global" className="w-full">
@@ -52,9 +50,7 @@ export const Leaderboard = () => {
                         <LeaderboardTable data={friendsLeaderboardData} />
                     </div>
                 </TabsContent>
-
             </Tabs>
-
         </div>
     );
 };
