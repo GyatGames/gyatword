@@ -326,7 +326,6 @@ def oAuth_login():
     redirect_url = f"{AUTH_URL}?{requests.compat.urlencode(query_params)}"
     return RedirectResponse(redirect_url)
 
-
 @app.get("/oAuth_callback")
 def oAuth_callback(code: str):
     """
@@ -334,6 +333,7 @@ def oAuth_callback(code: str):
     """
     sgt_timezone = timezone(timedelta(hours=8))
     today = datetime.now(sgt_timezone)
+
     # Exchange authorization code for access token
     token_data = {
         "code": code,
@@ -366,33 +366,30 @@ def oAuth_callback(code: str):
     if existing_user_response.data:
         # User exists, update last login time
         supa.table("profiles").update({"updated_at": today.isoformat()}).eq("email", user_info.get("email")).execute()
-        
-        return {"success": True,
-            "message": "Login successful",
-            "access_token": access_token,
-            "refresh_token": refresh_token if refresh_token else "",
-            }
-    
-    # Insert user information into Supabase database
-    user_data = {
-        "username": user_info.get("name"),
-        "email": user_info.get("email"),
-        "created_at": today.isoformat(),
-        "oAuth_provider": 'google',
-        "updated_at": today.isoformat(),
-    }
-    if refresh_token:
-        user_data["refresh_token"] = refresh_token  # Store only if available
-        
-    response = supa.table("profiles").insert(user_data).execute()
-    print(response)
 
-    return {
-            "success": True,
-            "message": "Login successful",
-            "access_token": access_token,
-            "refresh_token": refresh_token if refresh_token else "",
+    else:
+        # Insert new user into the database
+        user_data = {
+            "username": user_info.get("name"),
+            "email": user_info.get("email"),
+            "created_at": today.isoformat(),
+            "oAuth_provider": 'google',
+            "updated_at": today.isoformat(),
         }
+        if refresh_token:
+            user_data["refresh_token"] = refresh_token
+        
+        response = supa.table("profiles").insert(user_data).execute()
+        print(response)
+
+    # Redirect the user back to the frontend with tokens
+    frontend_redirect_url = f"https://test-gyatword.deploy.jensenhshoots.com/auth/callback"
+    query_params = {
+        "access_token": access_token,
+        "refresh_token": refresh_token if refresh_token else "",
+    }
+    redirect_url = f"{frontend_redirect_url}?{requests.compat.urlencode(query_params)}"
+    return RedirectResponse(redirect_url)
 
 
 def fetch_clues_from_supabase():

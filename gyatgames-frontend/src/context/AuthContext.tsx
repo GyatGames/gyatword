@@ -105,23 +105,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     };
 
-
     // **OAuth login function**
     const oAuthLogin = () => {
-        // Redirect the user to the Google OAuth login page
         window.location.href = "https://gyatwordapi-test.deploy.jensenhshoots.com/oAuth_login";
     };
 
     // **Handle OAuth callback function**
     const handleOAuthCallback = async (code: string) => {
         try {
-            const response = await axios.get(`https://gyatwordapi-test.deploy.jensenhshoots.com/oAuth_login?code=${code}`);
-            setUser(response.data.user_info); // Update user info with response data
-            localStorage.setItem("authToken", response.data.token); // Optional if backend sends a token
+            const response = await axios.get(
+                `https://gyatwordapi-test.deploy.jensenhshoots.com/oAuth_callback?code=${code}`
+            );
+
+            console.log("OAuth Response:", response.data);
+
+            const { access_token, refresh_token, username } = response.data;
+
+            if (!access_token) {
+                throw new Error("Access token is missing from OAuth response");
+            }
+
+            // Store tokens
+            localStorage.setItem("authToken", access_token);
+            if (refresh_token) {
+                localStorage.setItem("refreshToken", refresh_token);
+            }
+
+            // Set user in context
+            setUser({
+                username,
+                email: "", // Google OAuth doesn't return email directly here
+                id: "", // Google OAuth ID isn't stored in this response
+            });
+
+
         } catch (error) {
             console.error("OAuth callback failed:", error);
             throw error;
-        } finally {
         }
     };
 
