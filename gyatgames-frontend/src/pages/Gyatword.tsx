@@ -18,7 +18,7 @@ import {
 
 import PopupCorrect from "@/components/PopupCorrect";
 import PopupWrong from "@/components/PopupWrong";
-import Stopwatch from "@/components/Stopwatch";
+import Stopwatch, { StopwatchRef } from "@/components/Stopwatch";
 import { timer } from "@/components/timer";
 import { useCrosswordData } from "@/context/CrosswordDataContext";
 import { buttonVariants } from "@/components/ui/button";
@@ -38,12 +38,14 @@ export const Gyatword = () => {
     const pageTimer = useRef<ReturnType<typeof timer> | null>(null);
     const [isRunning, setIsRunning] = useState(true);
     const [usedReveal, setUsedReveal] = useState(false);
-    const [hintCount, setHintCount] = useState(0);
+    const [cellHintCount, setCellHintCount] = useState(0);
+    const [wordHintCount, setWordHintCount] = useState(0);
     const { data, loading, error } = useCrosswordData();
     const isDarkMode = useDarkMode();
     const isMobile = useIsMobile();
     const theme = isDarkMode ? darkTheme : lightTheme;
     const { isAuthenticated, user } = useAuth(); // Get user authentication status
+    const stopwatchRef = useRef<StopwatchRef>(null);
 
 
 
@@ -107,10 +109,14 @@ export const Gyatword = () => {
                         return;
                     }
 
-                    const minutes = Math.floor(totalSeconds / 60);
-                    const seconds = (totalSeconds % 60) - 1 < 10 ? `0${(totalSeconds % 60) - 1}` : (totalSeconds % 60) - 1;
+                    const timing = totalSeconds + (cellHintCount * 20) + (wordHintCount * 60);
+
+                    const minutes = Math.floor(timing / 60);
+                    const seconds = (timing % 60) - 1 < 10 ? `0${(timing % 60) - 1}` : (timing % 60) - 1;
 
                     const timeString = `${String(minutes).trim()}:${String(seconds).trim()}`;
+
+                    const hintCount = cellHintCount + wordHintCount;
 
                     console.log("Elapsed time when completed:", totalSeconds);
                     console.log("Final hint count:", hintCount); // Log the final hint count here
@@ -127,7 +133,7 @@ export const Gyatword = () => {
                     // ✅ Submit timing only if the user is logged in
                     if (isAuthenticated && user) {
                         try {
-                            await submitTiming(user.id, totalSeconds);
+                            await submitTiming(user.id, timing);
                             console.log("✅ Timing submitted successfully!");
                         } catch (error) {
                             console.error("❌ Failed to submit time:", error);
@@ -140,7 +146,7 @@ export const Gyatword = () => {
                 PopupWrong();
             }
         },
-        [usedReveal, hintCount]
+        [usedReveal, cellHintCount, wordHintCount]
     );
 
     // Log the data to the console
@@ -190,6 +196,7 @@ export const Gyatword = () => {
                 <div className="w-screen h-fit max-h-screen-minus-57 no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     <div className="flex flex-row gap-x-6 items-center mx-auto justify-center py-0.5 md:py-2 bg-background border-b-2">
                         <Stopwatch
+                            ref={stopwatchRef} 
                             running={isRunning}
                             onComplete={(elapsedTime) =>
                                 console.log(`Elapsed Time: ${elapsedTime}`)
@@ -219,21 +226,32 @@ export const Gyatword = () => {
                                 <FillSelectedCell
                                     crosswordProvider={crosswordProvider}
                                     onHintUsed={() => {
-                                        console.log("Previous hint count:", hintCount);
-                                        setHintCount((prev) => {
+                                        console.log("Previous hint count:", cellHintCount);
+                                        setCellHintCount((prev) => {
                                             console.log("Incrementing hint count:", prev + 1);
                                             return prev + 1;
                                         });
+                                        // ✅ Increment stopwatch by 20s when hint is used
+                                        if (stopwatchRef.current) {
+                                            stopwatchRef.current.addTime(20);
+                                            console.log("✅ Stopwatch incremented by 20s");
+                                        }
                                     }}
                                 />
                                 <FillSelectedAnswer
                                     crosswordProvider={crosswordProvider}
                                     onHintUsed={() => {
-                                        console.log("Previous hint count:", hintCount);
-                                        setHintCount((prev) => {
+                                        console.log("Previous hint count:", wordHintCount);
+                                        setWordHintCount((prev) => {
                                             console.log("Incrementing hint count:", prev + 1);
                                             return prev + 1;
                                         });
+                                        // ✅ Increment stopwatch by 60s when hint is used
+
+                                        if (stopwatchRef.current) {
+                                            stopwatchRef.current.addTime(60);
+                                            console.log("✅ Stopwatch incremented by 60s");
+                                        }
                                     }}
                                 />
 

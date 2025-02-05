@@ -61,6 +61,11 @@ const darkTheme = {
 
 export { lightTheme, darkTheme };
 
+export type LeaderboardEntry = {
+  username: string;
+  timing: number; // Stored in seconds
+};
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Submit a new timing for the leaderboard

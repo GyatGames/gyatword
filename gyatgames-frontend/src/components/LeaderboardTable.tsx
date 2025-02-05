@@ -7,11 +7,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-
-type LeaderboardEntry = {
-    username: string;
-    timing: number;
-};
+import { LeaderboardEntry } from "@/lib/utils";
 
 type LeaderboardTableProps = {
     data: LeaderboardEntry[];
