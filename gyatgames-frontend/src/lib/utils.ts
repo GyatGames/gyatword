@@ -61,4 +61,68 @@ const darkTheme = {
 
 export { lightTheme, darkTheme };
 
+export type LeaderboardEntry = {
+  username: string;
+  timing: number; // Stored in seconds
+};
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// Submit a new timing for the leaderboard
+export async function submitTiming(userId: string, timing: number) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/submit_timing`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId, timing }),
+    });
+    const data = await response.json();
+    console.log("Timing submission response:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to submit timing:", error);
+    throw error;
+  }
+}
+
+// Fetch the top 10 global leaderboard entries for today
+export async function fetchGlobalLeaderboard() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/globalLeaderboard`);
+    const data = await response.json();
+    console.log("Global Leaderboard:", data);
+
+    // Ensure data is an array before returning
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn("No leaderboard data available.");
+      return []; // Return an empty array instead of undefined/null
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch global leaderboard:", error);
+    return [];
+  }
+}
+
+// Fetch the top 10 leaderboard entries for today
+export async function fetchFriendsLeaderboard() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/friendsLeaderboard`);
+    const data = await response.json();
+    console.log("Friends Leaderboard:", data);
+
+    // Ensure data is an array before returning
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn("No leaderboard data available.");
+      return []; // Return an empty array instead of undefined/null
+    }
+
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch friends leaderboard:", error);
+    return [];
+  }
+}
 

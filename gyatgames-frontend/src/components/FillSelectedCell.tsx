@@ -34,7 +34,7 @@ const FillSelectedCell: React.FC<FillSelectedCellProps> = ({ crosswordProvider, 
         const { row: startRow, col: startCol } = selectedClue; // Use clue's starting position
         const answer = selectedClue.answer;
         console.log(answer);
-        
+
         const diff = row - startRow + col - startCol;
         console.log("diff", diff);
 
@@ -52,12 +52,13 @@ const FillSelectedCell: React.FC<FillSelectedCellProps> = ({ crosswordProvider, 
             target="_blank"
             rel="noreferrer noopener"
             onClick={FillSelectedCell}
-            //className={`cursor-pointer text-xs h-6 md:h-10 md:text-sm w-16 ${buttonVariants({
-                //variant: "outline",
-            //})}`}
+        //className={`cursor-pointer text-xs h-6 md:h-10 md:text-sm w-16 ${buttonVariants({
+        //variant: "outline",
+        //})}`}
         >
-            <DropdownMenuItem>
-                Cell
+            <DropdownMenuItem className="flex justify-between items-center">
+                <span>Cell</span>
+                <span className="text-muted-foreground text-sm">+20s</span>
             </DropdownMenuItem>
         </a>
 

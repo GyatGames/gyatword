@@ -1,60 +1,71 @@
+import { useState, useEffect } from "react";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { TableCaption } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
-
-const globalLeaderboardData = [
-    { username: "Alice", time: 85 },
-    { username: "Bob", time: 120 },
-    { username: "Charlie", time: 95 },
-    { username: "David", time: 75 },
-    { username: "Eve", time: 110 },
-    { username: "Frank", time: 100 },
-    { username: "Grace", time: 130 },
-    { username: "Hannah", time: 90 },
-    { username: "Ivy", time: 125 },
-    { username: "Jack", time: 105 },
-];
-
-const friendsLeaderboardData = [
-    { username: "Alice", time: 85 },
-    { username: "Bob", time: 120 },
-    { username: "Charlie", time: 95 },
-    { username: "David", time: 75 },
-    { username: "Eve", time: 110 },
-    { username: "Frank", time: 100 },
-    { username: "Grace", time: 130 },
-    { username: "Hannah", time: 90 },
-    { username: "Ivy", time: 125 },
-    { username: "Jack", time: 105 },
-];
+import { fetchFriendsLeaderboard, fetchGlobalLeaderboard, LeaderboardEntry } from "@/lib/utils";
+// import { Button } from "@/components/ui/button";
+// import { RefreshCcw } from "lucide-react";
 
 export const Leaderboard = () => {
+    const [globalLeaderboardData, setGlobalLeaderboardData] = useState<LeaderboardEntry[]>([]);
+    const [friendsLeaderboardData, setFriendsLeaderboardData] = useState<LeaderboardEntry[]>([]);
+    const [loading, setLoading] = useState(true); // ✅ Loading state
+    const [unfinished] = useState(true);
+
+    // ✅ Function to fetch leaderboard data (used on mount & refresh)
+    async function refreshLeaderboard() {
+        setLoading(true);
+        // setRefreshing(true); // ✅ Show refreshing indicator
+        try {
+            const globalData = await fetchGlobalLeaderboard();
+            setGlobalLeaderboardData(globalData);
+            const friendsData = await fetchFriendsLeaderboard();
+            setFriendsLeaderboardData(friendsData);
+        } catch (error) {
+            console.error("❌ Failed to fetch leaderboard:", error);
+        } finally {
+            setLoading(false);
+            // setRefreshing(false); // ✅ Hide refreshing indicator
+        }
+    }
+
+    // ✅ Fetch leaderboard data on mount
+    useEffect(() => {
+        refreshLeaderboard(); // Initial fetch
+
+        // ✅ Auto-refresh every 10 minutes
+        const interval = setInterval(refreshLeaderboard, 600000);
+        return () => clearInterval(interval); // Cleanup interval
+    }, []);
+
     return (
-        <div className="flex max-h-screen-minus-57 md:mt-10 items-start justify-center no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="flex flex-col max-h-screen-minus-57 md:mt-10 items-center justify-center no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+
             <Tabs defaultValue="global" className="w-full">
-                <div className=" mx-auto flex flex-col items-center justify-center w-[400px]">
+                <div className="mx-auto flex flex-col items-center justify-center w-[400px]">
                     <TabsList className="grid grid-cols-2 w-full">
                         <TabsTrigger value="global">Global Leaderboard</TabsTrigger>
                         <TabsTrigger value="friends">Friends Leaderboard</TabsTrigger>
                     </TabsList>
+                </div>
+                <div className="flex h-fit w-full mx-auto flex-row items-center justify-center">
                     <TableCaption className="md:text-lg">
                         Fastest completion times for {format(new Date(), "MMMM dd, yyyy")}.
                     </TableCaption>
                 </div>
                 <TabsContent value="global">
                     <div className="flex md:px-6 md:mx-6 h-fit border-2">
-                        <LeaderboardTable data={globalLeaderboardData} />
+                        {loading ? <p className="text-center mx-auto">Loading leaderboard...</p> : <LeaderboardTable data={globalLeaderboardData} />}
                     </div>
                 </TabsContent>
+
                 <TabsContent value="friends">
                     <div className="flex md:px-6 md:mx-6 h-fit border-2">
-                        <LeaderboardTable data={friendsLeaderboardData} />
+                        {unfinished ? <p className="text-center mx-auto">Coming soon...</p> : <LeaderboardTable data={friendsLeaderboardData} />}
                     </div>
                 </TabsContent>
-
             </Tabs>
-
         </div>
     );
 };

@@ -52,12 +52,13 @@ const FillSelectedAnswer: React.FC<FillSelectedAnswerProps> = ({ crosswordProvid
             target="_blank"
             rel="noreferrer noopener"
             onClick={handleFillSelectedAnswer}
-            //className={`cursor-pointer text-xs h-6 md:h-10 md:text-sm w-16 ${buttonVariants({
-                //variant: "outline",
-            //})}`}
+        //className={`cursor-pointer text-xs h-6 md:h-10 md:text-sm w-16 ${buttonVariants({
+        //variant: "outline",
+        //})}`}
         >
-            <DropdownMenuItem>
-                Word
+            <DropdownMenuItem className="flex justify-between items-center">
+                <span>Word</span>
+                <span className="text-muted-foreground text-sm">+60s</span>
             </DropdownMenuItem>
         </a>
 

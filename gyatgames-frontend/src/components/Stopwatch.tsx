@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useImperativeHandle, forwardRef } from "react";
 
 type StopwatchProps = {
     running: boolean;
     onComplete?: (elapsedTime: string) => void;
 };
 
-const Stopwatch: React.FC<StopwatchProps> = ({ running, onComplete }) => {
+// ✅ Define the StopwatchRef type
+export type StopwatchRef = {
+    addTime: (seconds: number) => void;
+};
+
+const Stopwatch = forwardRef<StopwatchRef, StopwatchProps>(({ running, onComplete }, ref) => {
     const [elapsedTime, setElapsedTime] = useState(0);
 
     useEffect(() => {
@@ -26,20 +31,24 @@ const Stopwatch: React.FC<StopwatchProps> = ({ running, onComplete }) => {
 
     useEffect(() => {
         if (!running && onComplete) {
-            const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
-            const seconds = (elapsedTime % 60).toString().padStart(2, '0');
-            onComplete(`${minutes}:${seconds}`);
+            onComplete(formatTime(elapsedTime));
         }
     }, [running, elapsedTime, onComplete]);
 
-    const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
-    const seconds = (elapsedTime % 60).toString().padStart(2, '0');
+    // ✅ Expose addTime method using useImperativeHandle
+    useImperativeHandle(ref, () => ({
+        addTime: (seconds: number) => {
+            setElapsedTime((prev) => prev + seconds);
+        },
+    }));
 
-    return (
-        <div className="px-2 w-14">
-            {minutes}:{seconds}
-        </div>
-    );
-};
+    const formatTime = (totalSeconds: number): string => {
+        const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+        const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+        return `${minutes}:${seconds}`;
+    };
+
+    return <div className="px-2 w-14">{formatTime(elapsedTime)}</div>;
+});
 
 export default Stopwatch;

@@ -565,62 +565,90 @@ async def refresh_token(refresh_token: str = Body(...)):
         }
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token.")
-    
 
-# 🚀 Insert Timing Endpoint
+class TimingSubmission(BaseModel):
+    user_id: str
+    timing: int  # Ensure this is correctly formatted as 'HH:MM:SS'
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from datetime import datetime
+import supabase
+
+class TimingSubmission(BaseModel):
+    user_id: str
+    timing: int  # Store as an integer (seconds)
+
 @app.post("/submit_timing")
-def submit_timing(user_id: str, timing: str):
-    """
-    Inserts or updates a user's crossword completion time for today.
-    """
-    today = date.today().isoformat()  # Format: YYYY-MM-DD
+def submit_timing(data: TimingSubmission):
+    """ Endpoint to submit a crossword completion time in seconds """
 
-    # Check if user exists in profiles table
-    user_query = supa.table("profiles").select("id").eq("id", user_id).execute()
+    try:
+        sgt_timezone = timezone(timedelta(hours=8))
+        today = datetime.now(sgt_timezone).date().isoformat()  # makes sure its SG Time
 
-    if user_query.error or not user_query.data:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    # Insert or update timing
-    query = (
-        supa.table("timings")
-        .upsert(
-            {
-                "user_id": user_id,
-                "date": today,
-                "timing": timing,  # String format: "00:03:25"
-            },
-            on_conflict=["user_id", "date"]
+        # ✅ Step 1: Check if the user already has a timing for today
+        existing_response = (
+            supa.table("timings")
+            .select("*")
+            .eq("user_id", data.user_id)
+            .eq("date", today)
+            .execute()
         )
-        .execute()
-    )
 
-    if query.error:
-        raise HTTPException(status_code=500, detail=f"Failed to submit timing: {query.error.message}")
+        if existing_response.data:  # If a timing exists, reject submission
+            return {"success": False, "message": "Timing already recorded. Only first attempt counts."}
 
-    return {"success": True, "message": "Timing recorded successfully!"}
+        # ✅ Step 2: Insert the first valid timing
+        insert_response = supa.table("timings").insert({
+            "user_id": data.user_id,
+            "date": today,  # Store as a string
+            "timing": data.timing  # Store as integer (seconds)
+        }).execute()
 
-# 🚀 Get Daily Leaderboard Endpoint
-@app.get("/leaderboard")
-def get_daily_leaderboard():
-    """
-    Fetches the top 10 fastest crossword completion times for today.
-    """
-    today = date.today().isoformat()
+        # ✅ Fix: Check if `error` exists in response
+        if hasattr(insert_response, "error") and insert_response.error:
+            print(f"Supabase Insert Error: {insert_response.error}")
+            raise HTTPException(status_code=500, detail="Failed to insert timing.")
 
-    query = (
+        return {"success": True, "message": "Timing submitted successfully!"}
+
+    except Exception as e:
+        print(f"Error submitting timing: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@app.get("/globalLeaderboard")
+def get_global_leaderboard():
+    """ Fetch the top 10 fastest completion times for today """
+
+    today = datetime.utcnow().date()
+    
+    response = (
         supa.table("timings")
-        .select("timing, profiles(username)")
+        .select("user_id, timing")
         .eq("date", today)
-        .order("timing", asc=True)
-        .limit(10)
+        .order("timing", desc=False)  # ✅ FIXED: Use "desc=False" for ascending order
+        .limit(10)  # ✅ Get top 10
         .execute()
     )
+    if hasattr(response, "error") and response.error:
+        print(f"Supabase Query Error: {response.error}")
+        raise HTTPException(status_code=500, detail="Failed to fetch leaderboard.")
 
-    if query.error:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch leaderboard: {query.error.message}")
+    leaderboard_data = response.data
 
-    return query.data
+    # Fetch usernames for each user_id
+    for entry in leaderboard_data:
+        user_response = (
+            supa.table("profiles")
+            .select("username")
+            .eq("id", entry["user_id"])
+            .single()
+            .execute()
+        )
+        entry["username"] = user_response.data["username"] if user_response.data else "Unknown"
+
+    return leaderboard_data
 
 def remove_substrings_in_place(words):
     """
