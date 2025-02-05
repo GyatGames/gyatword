@@ -29,7 +29,7 @@ const PopupHelp = (message: string) => {
     Swal.fire({
         title: 'Good effort!!',
         html: `<p>${message}</p><p>Loading...</p>`,
-        icon: 'info',
+        icon: 'warning',
         confirmButtonText: 'Close',
         customClass: {
             container: 'swal-container',

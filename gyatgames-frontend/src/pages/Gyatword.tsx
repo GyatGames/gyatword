@@ -32,6 +32,7 @@ import PopupHelp from "@/components/PopupHelp";
 import FillSelectedCell from "@/components/FillSelectedCell";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useAuth } from "@/context/AuthContext";
+import { PopInfo } from "@/components/PopupInfo";
 
 export const Gyatword = () => {
     const crosswordProvider = useRef<CrosswordProviderImperative>(null);
@@ -196,7 +197,7 @@ export const Gyatword = () => {
                 <div className="w-screen h-fit max-h-screen-minus-57 no-scrollbar overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     <div className="flex flex-row gap-x-6 items-center mx-auto justify-center py-0.5 md:py-2 bg-background border-b-2">
                         <Stopwatch
-                            ref={stopwatchRef} 
+                            ref={stopwatchRef}
                             running={isRunning}
                             onComplete={(elapsedTime) =>
                                 console.log(`Elapsed Time: ${elapsedTime}`)
@@ -262,6 +263,7 @@ export const Gyatword = () => {
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
+                        <PopInfo /> {/* 📌 Info button */}
 
                     </div>
                     <div className="flex flex-col w-full md:gap-5 md:flex-row max-h-fit lg:px-16 md:px-8">

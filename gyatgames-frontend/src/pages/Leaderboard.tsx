@@ -11,7 +11,7 @@ export const Leaderboard = () => {
     const [globalLeaderboardData, setGlobalLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [friendsLeaderboardData, setFriendsLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [loading, setLoading] = useState(true); // ✅ Loading state
-    // const [ setRefreshing] = useState(false); // ✅ Refreshing state for button UI
+    const [unfinished] = useState(true);
 
     // ✅ Function to fetch leaderboard data (used on mount & refresh)
     async function refreshLeaderboard() {
@@ -53,24 +53,16 @@ export const Leaderboard = () => {
                     <TableCaption className="md:text-lg">
                         Fastest completion times for {format(new Date(), "MMMM dd, yyyy")}.
                     </TableCaption>
-                    {/* <Button
-                        onClick={refreshLeaderboard}
-                        variant="ghost"
-                        className="p-2 mx-4 mt-4 bottom[-50]"
-                        disabled={refreshing} // ✅ Disable while refreshing
-                    >
-                        <RefreshCcw className="" />
-                    </Button> */}
                 </div>
                 <TabsContent value="global">
                     <div className="flex md:px-6 md:mx-6 h-fit border-2">
-                        {loading ? <p className="text-center">Loading leaderboard...</p> : <LeaderboardTable data={globalLeaderboardData} />}
+                        {loading ? <p className="text-center mx-auto">Loading leaderboard...</p> : <LeaderboardTable data={globalLeaderboardData} />}
                     </div>
                 </TabsContent>
 
                 <TabsContent value="friends">
                     <div className="flex md:px-6 md:mx-6 h-fit border-2">
-                        {loading ? <p className="text-center">Loading leaderboard...</p> : <LeaderboardTable data={friendsLeaderboardData} />}
+                        {unfinished ? <p className="text-center mx-auto">Coming soon...</p> : <LeaderboardTable data={friendsLeaderboardData} />}
                     </div>
                 </TabsContent>
             </Tabs>
