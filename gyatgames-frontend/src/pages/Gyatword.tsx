@@ -132,7 +132,7 @@ export const Gyatword = () => {
                         );
                     }
                     // ✅ Submit timing only if the user is logged in
-                    if (isAuthenticated && user) {
+                    if (isAuthenticated && user && !usedReveal) {
                         try {
                             await submitTiming(user.id, timing);
                             console.log("✅ Timing submitted successfully!");
