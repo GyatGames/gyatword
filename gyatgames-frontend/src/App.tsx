@@ -10,28 +10,31 @@ import "./App.css";
 import { AuthProvider } from './context/AuthContext';
 import AuthRoute from './components/AuthRoute';
 import AuthCallback from './components/AuthCallback';
+import { StreaksProvider } from './context/StreaksContext';
 function App() {
 
   return (
     <>
       <AuthProvider>
-        <BrowserRouter>
-          <CrosswordDataProvider>
-            <Navbar />
-            <Routes>
-              {/* Define routes for each page */}
-              <Route path="/" element={<Hero />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/gyatword" element={<Gyatword />} />
-              <Route path="/auth" element={<AuthRoute />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
+        <StreaksProvider>
+          <BrowserRouter>
+            <CrosswordDataProvider>
+              <Navbar />
+              <Routes>
+                {/* Define routes for each page */}
+                <Route path="/" element={<Hero />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/gyatword" element={<Gyatword />} />
+                <Route path="/auth" element={<AuthRoute />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
 
-              <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
 
 
-            </Routes>
-          </CrosswordDataProvider>
-        </BrowserRouter>
+              </Routes>
+            </CrosswordDataProvider>
+          </BrowserRouter>
+        </StreaksProvider>
       </AuthProvider>
     </>
   )
