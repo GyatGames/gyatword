@@ -584,7 +584,8 @@ def submit_timing(data: TimingSubmission):
     """ Endpoint to submit a crossword completion time in seconds """
 
     try:
-        today = datetime.utcnow().date().isoformat()  # Convert date to string (YYYY-MM-DD)
+        sgt_timezone = timezone(timedelta(hours=8))
+        today = datetime.now(sgt_timezone).date().isoformat()  # makes sure its SG Time
 
         # ✅ Step 1: Check if the user already has a timing for today
         existing_response = (
