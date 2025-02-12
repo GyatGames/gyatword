@@ -621,8 +621,8 @@ def submit_timing(data: TimingSubmission):
 def get_global_leaderboard():
     """ Fetch the top 10 fastest completion times for today """
 
-    today = datetime.utcnow().date()
-    
+    sgt_timezone = timezone(timedelta(hours=8))
+    today = datetime.now(sgt_timezone).date().isoformat()  # makes sure its SG Time    
     response = (
         supa.table("timings")
         .select("user_id, timing")
