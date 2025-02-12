@@ -5,7 +5,7 @@ FROM python:3.12-slim
 ENV DEBIAN_FRONTEND=noninteractive 
 #RUN mkdir -p /usr/share/man/man1 /usr/share/man/man2
 
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get -y upgrade
 
 RUN apt install -y openjdk-17-jre
 
