@@ -14,6 +14,8 @@ from starlette.requests import Request
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from jose import jwt, JWTError
+import names
+import uuid
 
 
 
@@ -647,6 +649,31 @@ def get_global_leaderboard():
             .execute()
         )
         entry["username"] = user_response.data["username"] if user_response.data else "Unknown"
+    
+    if len(leaderboard_data) == 0:
+        for _ in range(5):  # Insert exactly 5 fake users
+            new_entry = {
+                "user_id": str(uuid.uuid4()),  # Random UUID
+                "username": names.get_full_name(),
+                "date": today,
+                "timing": random.randint(240, 540),  # Random timing
+            }
+
+            # Insert into profiles table
+            supa.table("profiles").insert({
+                "id": new_entry["user_id"],
+                "username": new_entry["username"],
+                "email": new_entry["username"].replace(" ", "").lower() + ".fakeahhhname@gmail.com",
+            }).execute()
+
+            # Insert into timings table
+            supa.table("timings").insert({
+                "user_id": new_entry["user_id"],
+                "date": new_entry["date"],
+                "timing": new_entry["timing"],
+            }).execute()
+
+            leaderboard_data.append(new_entry)
 
     return leaderboard_data
 

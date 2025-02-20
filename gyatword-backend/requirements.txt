@@ -8,3 +8,4 @@ pydantic[email]==2.10.5
 email-validator
 starlette
 jose
+names
